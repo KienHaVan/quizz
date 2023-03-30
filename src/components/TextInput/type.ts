@@ -1,6 +1,6 @@
-import { TextFieldProps } from '@mui/material';
+import { SxProps, Theme } from '@mui/material';
 
 export interface Props {
   label?: string;
-  props?: TextFieldProps;
+  extraStyles?: SxProps<Theme>;
 }

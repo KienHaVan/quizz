@@ -7,10 +7,10 @@ const CustomText = ({
   children,
   variant = 'subtitle1',
   color = colors.black,
-  marginTop = 0,
+  extraStyles,
 }: Props) => {
   return (
-    <Typography variant={variant} color={color} marginTop={marginTop}>
+    <Typography variant={variant} color={color} sx={extraStyles}>
       {children}
     </Typography>
   );

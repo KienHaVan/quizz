@@ -1,3 +1,4 @@
+import { SxProps, Theme } from '@mui/material';
 export interface Props {
   children?: React.ReactNode;
   variant:
@@ -17,5 +18,5 @@ export interface Props {
     | 'overline'
     | undefined;
   color?: string;
-  marginTop?: number;
+  extraStyles?: SxProps<Theme>;
 }

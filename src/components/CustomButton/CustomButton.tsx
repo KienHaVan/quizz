@@ -4,9 +4,13 @@ import { CustomText } from '../CustomText';
 import { Props } from './type';
 import { colors } from '../../constants';
 
-const CustomButton = ({ variant = 'contained' }: Props) => {
+const CustomButton = ({
+  variant = 'contained',
+  extraStyles,
+  children,
+}: Props) => {
   return (
-    <Button variant={variant} sx={{ textTransform: 'none' }}>
+    <Button variant={variant} sx={{ textTransform: 'none', ...extraStyles }}>
       <CustomText
         variant="subtitle1"
         color={
@@ -17,7 +21,7 @@ const CustomButton = ({ variant = 'contained' }: Props) => {
             : colors.primary
         }
       >
-        Type 1
+        {children}
       </CustomText>
     </Button>
   );
