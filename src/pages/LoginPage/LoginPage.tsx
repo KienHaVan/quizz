@@ -9,6 +9,13 @@ import { Images } from '../../assets';
 import { CustomText } from '../../components/CustomText';
 import { colors } from '../../constants';
 import Grid from '@mui/material/Grid';
+import { FormType } from './type';
+import { ErrorResponseType } from '../../store/apis/AuthAPI/types';
+import { useLoginMutation } from '../../store/apis/AuthAPI/authApi';
+import { useAppDispatch } from '../../store';
+import { setCredentials } from '../../store/slices/authSlice';
+import { Link } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
 
 const schema = yup
   .object({
@@ -32,17 +39,29 @@ const LoginPage = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm({
+    reset,
+    formState: { errors },
+  } = useForm<FormType>({
     resolver: yupResolver(schema),
     mode: 'onChange',
   });
-  const onSubmit = (data: any) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        console.log(data);
-      }, 5000);
-    });
+
+  const [login, { isLoading }] = useLoginMutation();
+  const dispatch = useAppDispatch();
+
+  const onSubmit = async (data: FormType) => {
+    try {
+      const result = await login(data).unwrap();
+      dispatch(setCredentials(result));
+      reset({
+        email: '',
+        password: '',
+      });
+      toast('Login successfully!');
+    } catch (error) {
+      const err = error as ErrorResponseType;
+      console.error(err.data.message);
+    }
   };
   return (
     <Grid container height="100vh" p={4} spacing={2}>
@@ -92,19 +111,29 @@ const LoginPage = () => {
           error={!!errors.password}
           helperText={errors.password?.message?.toString()}
         />
-        <Button
-          variant="text"
-          sx={{
-            textTransform: 'none',
-            color: colors.gray,
-            alignSelf: 'flex-end',
-            ':hover': {
-              bgcolor: 'transparent',
-            },
+        <Link
+          to="/forgot-password"
+          style={{
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            textDecoration: 'none',
           }}
         >
-          Forgot Password?
-        </Button>
+          <Button
+            variant="text"
+            sx={{
+              textTransform: 'none',
+              color: colors.gray,
+              alignSelf: 'flex-end',
+              ':hover': {
+                bgcolor: 'transparent',
+              },
+            }}
+          >
+            Forgot Password?
+          </Button>
+        </Link>
         <Button
           variant="contained"
           sx={{
@@ -116,12 +145,19 @@ const LoginPage = () => {
           }}
           onClick={handleSubmit(onSubmit)}
         >
-          {isSubmitting ? (
-            <CircularProgress color="success" size={30} />
-          ) : (
-            'Login'
-          )}
+          {isLoading ? <CircularProgress color="success" size={30} /> : 'Login'}
         </Button>
+        <Link
+          to="/register"
+          style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+        >
+          <CustomText
+            variant="subtitle1"
+            extraStyles={{ marginTop: 4, alignSelf: 'center' }}
+          >
+            Don't have an account? Sign Up
+          </CustomText>
+        </Link>
       </Grid>
       <Grid
         item
