@@ -14,6 +14,8 @@ import { ErrorResponseType } from '../../store/apis/AuthAPI/types';
 import { useLoginMutation } from '../../store/apis/AuthAPI/authApi';
 import { useAppDispatch } from '../../store';
 import { setCredentials } from '../../store/slices/authSlice';
+import { Link } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
 
 const schema = yup
   .object({
@@ -55,6 +57,7 @@ const LoginPage = () => {
         email: '',
         password: '',
       });
+      toast('Login successfully!');
     } catch (error) {
       const err = error as ErrorResponseType;
       console.error(err.data.message);
@@ -108,19 +111,29 @@ const LoginPage = () => {
           error={!!errors.password}
           helperText={errors.password?.message?.toString()}
         />
-        <Button
-          variant="text"
-          sx={{
-            textTransform: 'none',
-            color: colors.gray,
-            alignSelf: 'flex-end',
-            ':hover': {
-              bgcolor: 'transparent',
-            },
+        <Link
+          to="/forgot-password"
+          style={{
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            textDecoration: 'none',
           }}
         >
-          Forgot Password?
-        </Button>
+          <Button
+            variant="text"
+            sx={{
+              textTransform: 'none',
+              color: colors.gray,
+              alignSelf: 'flex-end',
+              ':hover': {
+                bgcolor: 'transparent',
+              },
+            }}
+          >
+            Forgot Password?
+          </Button>
+        </Link>
         <Button
           variant="contained"
           sx={{
@@ -134,6 +147,17 @@ const LoginPage = () => {
         >
           {isLoading ? <CircularProgress color="success" size={30} /> : 'Login'}
         </Button>
+        <Link
+          to="/register"
+          style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+        >
+          <CustomText
+            variant="subtitle1"
+            extraStyles={{ marginTop: 4, alignSelf: 'center' }}
+          >
+            Don't have an account? Sign Up
+          </CustomText>
+        </Link>
       </Grid>
       <Grid
         item
