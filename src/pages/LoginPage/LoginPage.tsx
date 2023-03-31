@@ -9,6 +9,11 @@ import { Images } from '../../assets';
 import { CustomText } from '../../components/CustomText';
 import { colors } from '../../constants';
 import Grid from '@mui/material/Grid';
+import { FormType } from './type';
+import { ErrorResponseType } from '../../store/apis/AuthAPI/types';
+import { useLoginMutation } from '../../store/apis/AuthAPI/authApi';
+import { useAppDispatch } from '../../store';
+import { setCredentials } from '../../store/slices/authSlice';
 
 const schema = yup
   .object({
@@ -32,17 +37,28 @@ const LoginPage = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm({
+    reset,
+    formState: { errors },
+  } = useForm<FormType>({
     resolver: yupResolver(schema),
     mode: 'onChange',
   });
-  const onSubmit = (data: any) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        console.log(data);
-      }, 5000);
-    });
+
+  const [login, { isLoading }] = useLoginMutation();
+  const dispatch = useAppDispatch();
+
+  const onSubmit = async (data: FormType) => {
+    try {
+      const result = await login(data).unwrap();
+      dispatch(setCredentials(result));
+      reset({
+        email: '',
+        password: '',
+      });
+    } catch (error) {
+      const err = error as ErrorResponseType;
+      console.error(err.data.message);
+    }
   };
   return (
     <Grid container height="100vh" p={4} spacing={2}>
@@ -116,11 +132,7 @@ const LoginPage = () => {
           }}
           onClick={handleSubmit(onSubmit)}
         >
-          {isSubmitting ? (
-            <CircularProgress color="success" size={30} />
-          ) : (
-            'Login'
-          )}
+          {isLoading ? <CircularProgress color="success" size={30} /> : 'Login'}
         </Button>
       </Grid>
       <Grid
