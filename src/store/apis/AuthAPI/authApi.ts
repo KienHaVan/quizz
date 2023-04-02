@@ -36,7 +36,18 @@ export const authApiSlice = apiSlice.injectEndpoints({
         body: credentials,
       }),
     }),
+    resetPassword: builder.mutation({
+      query: (credentails) => ({
+        url: 'authentication/forgot-password',
+        method: 'POST',
+        body: credentails,
+      }),
+    }),
   }),
 });
 
-export const { useLoginMutation, useRegisterMutation } = authApiSlice;
+export const {
+  useLoginMutation,
+  useRegisterMutation,
+  useResetPasswordMutation,
+} = authApiSlice;
