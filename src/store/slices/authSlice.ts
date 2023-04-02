@@ -33,10 +33,14 @@ const authSlice = createSlice({
       state.refreshToken = null;
       localStorage.clear();
     },
+    initCredentials: (state, action: PayloadAction<AuthStateType>) => {
+      return action.payload;
+    },
   },
 });
 
-export const { setCredentials, logOut, setNewAccessToken } = authSlice.actions;
+export const { setCredentials, logOut, setNewAccessToken, initCredentials } =
+  authSlice.actions;
 export default authSlice.reducer;
 
 export const selectCurrentUser = (state: RootState) => state.auth.user;

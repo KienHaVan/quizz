@@ -19,6 +19,7 @@ import { useAppDispatch } from '../../store';
 import { setCredentials } from '../../store/slices/authSlice';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 
 const schema = yup
   .object({
@@ -58,18 +59,25 @@ const RegisterPage = () => {
   const onSubmit = async (data: FormType) => {
     try {
       await registerFn(data).unwrap();
-      const result = await login({
-        email: data.email,
-        password: data.password,
-      }).unwrap();
-      dispatch(setCredentials(result));
       toast('Register successfully!');
       reset({
         email: '',
         password: '',
         name: '',
       });
-      navigate('/');
+      const result = await Swal.fire({
+        title: 'Go to login?',
+        showCancelButton: true,
+        confirmButtonText: 'Login',
+      });
+      if (result.isConfirmed) {
+        const auth = await login({
+          email: data.email,
+          password: data.password,
+        }).unwrap();
+        dispatch(setCredentials(auth));
+        navigate('/');
+      }
     } catch (error) {
       const err = error as ErrorResponseType;
       console.error(err.data.message);
@@ -99,9 +107,9 @@ const RegisterPage = () => {
         >
           <img src={Images.LOGO} alt="Logo" />
           <CustomText variant="h5" extraStyles={{ marginTop: 2 }}>
-            Welcome back!
+            Welcome newbie!
           </CustomText>
-          <CustomText variant="h5">Please login to your account!</CustomText>
+          <CustomText variant="h5">Please sign up your account!</CustomText>
         </Box>
         <TextField
           variant="standard"
@@ -147,7 +155,7 @@ const RegisterPage = () => {
           {isLoading || isLoginLoading ? (
             <CircularProgress color="success" size={30} />
           ) : (
-            'Login'
+            'Register'
           )}
         </Button>
         <Link
