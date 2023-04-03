@@ -1,7 +1,13 @@
 import React from 'react';
+import { Header } from '../../components/Header';
 
 const ManagementPage = () => {
-  return <div>ManagementPage</div>;
+  return (
+    <div>
+      <Header />
+      ManagementPage
+    </div>
+  );
 };
 
 export default ManagementPage;

@@ -18,7 +18,7 @@ const router = createBrowserRouter([
         element: <PlayPage />,
       },
       {
-        path: '/managemen',
+        path: '/management',
         element: <ManagementPage />,
       },
     ],

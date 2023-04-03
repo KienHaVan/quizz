@@ -43,6 +43,13 @@ export const authApiSlice = apiSlice.injectEndpoints({
         body: credentails,
       }),
     }),
+    logOut: builder.mutation({
+      query: (refresh_token) => ({
+        url: 'authentication/logout',
+        method: 'POST',
+        body: refresh_token,
+      }),
+    }),
   }),
 });
 
@@ -50,4 +57,5 @@ export const {
   useLoginMutation,
   useRegisterMutation,
   useResetPasswordMutation,
+  useLogOutMutation,
 } = authApiSlice;
