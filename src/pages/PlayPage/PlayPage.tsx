@@ -10,7 +10,6 @@ import { CustomText } from '../../components/CustomText';
 import { Header } from '../../components/Header';
 import { QuestionContent } from '../../components/QuestionContent';
 import { colors } from '../../constants';
-import { useGetQuestionsQuery } from '../../store/apis/QuestionAPI/questionApi';
 
 interface formData {
   number: number;
@@ -48,7 +47,7 @@ const PlayPage = () => {
     setIsModalOpen(false);
   };
   return (
-    <>
+    <Box sx={{ minHeight: '100vh', display: 'flex' }}>
       <Header />
       <Modal
         open={isModalOpen}
@@ -95,10 +94,8 @@ const PlayPage = () => {
           </Button>
         </Box>
       </Modal>
-      {!isModalOpen && (
-        <QuestionContent number={numberQuestion}></QuestionContent>
-      )}
-    </>
+      {numberQuestion && <QuestionContent number={numberQuestion} />}
+    </Box>
   );
 };
 

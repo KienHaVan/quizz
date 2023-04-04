@@ -5,7 +5,15 @@ export const questionApiSlice = apiSlice.injectEndpoints({
     getQuestions: builder.query({
       query: (arg) => `/questions/play?total=${arg}`,
     }),
+    submitQuestions: builder.mutation({
+      query: (listQuestionSubmitted) => ({
+        url: 'questions/submit',
+        method: 'POST',
+        body: listQuestionSubmitted,
+      }),
+    }),
   }),
 });
 
-export const { useGetQuestionsQuery } = questionApiSlice;
+export const { useGetQuestionsQuery, useSubmitQuestionsMutation } =
+  questionApiSlice;
