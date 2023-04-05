@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { ErrorPage } from '../pages/ErrorPage';
 import { PlayPage } from '../pages/PlayPage';
+import { ReviewPage } from '../pages/ReviewPage';
 
 const router = createBrowserRouter([
   {
@@ -9,6 +10,10 @@ const router = createBrowserRouter([
       {
         path: '/',
         element: <PlayPage />,
+      },
+      {
+        path: '/review',
+        element: <ReviewPage />,
       },
     ],
   },

@@ -4,6 +4,7 @@ import { AdminPage } from '../pages/AdminPage';
 import { ErrorPage } from '../pages/ErrorPage';
 import { ManagementPage } from '../pages/ManagamentPage';
 import { PlayPage } from '../pages/PlayPage';
+import { ReviewPage } from '../pages/ReviewPage';
 
 const router = createBrowserRouter([
   {
@@ -16,6 +17,10 @@ const router = createBrowserRouter([
       {
         path: '/play',
         element: <PlayPage />,
+      },
+      {
+        path: '/review',
+        element: <ReviewPage />,
       },
       {
         path: '/management',

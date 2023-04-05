@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router';
 import { useAppDispatch, useAppSelector } from '../store';
 import {
@@ -10,8 +10,10 @@ import { decryptData } from '../utils/cryptData';
 import AdminRoutes from './AdminRoutes';
 import PublicRoutes from './PublicRoutes';
 import UserRoutes from './UserRoutes';
+import { LoadingPage } from '../pages/LoadingPage';
 
 const Router = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectCurrentUser);
   const token = useAppSelector(selectCurrentToken);
@@ -19,10 +21,16 @@ const Router = () => {
   useEffect(() => {
     const auth = decryptData('auth');
     if (!auth) {
+      setIsLoading(true);
       return;
     }
+    setIsLoading(true);
     dispatch(initCredentials(auth));
   }, [dispatch]);
+
+  if (!isLoading) {
+    return <LoadingPage />;
+  }
 
   if (token && user?.roles.includes('admin')) {
     return <AdminRoutes />;
