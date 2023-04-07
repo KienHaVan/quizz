@@ -1,0 +1,144 @@
+import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import { IconButton } from '@mui/material';
+import Box from '@mui/material/Box';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { colors } from '../../constants';
+import { useDeleteQuestionMutation } from '../../store/apis/ManagementAPI/managementApi';
+import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
+import EditQuestionModal from './EditQuestionModal';
+import { useState } from 'react';
+
+const QuestionTable = ({
+  responseQuestionsData,
+  rowCount,
+  isLoading,
+  isFetching,
+  paginationModel,
+  setPaginationModel,
+}: any) => {
+  const [deleteQuestion] = useDeleteQuestionMutation();
+  const handleDeleteQuestion = (questionId: number) => {
+    try {
+      Swal.fire({
+        title: 'Do you want to delete?',
+        showCancelButton: true,
+        confirmButtonText: 'Submit',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          deleteQuestion({ questionId }).unwrap();
+          toast.success('Delete the question successfully.');
+        }
+      });
+    } catch (error) {
+      toast.error('Failed to delete question');
+      console.log(error);
+    }
+  };
+
+  const [isModalEditQuestionOpen, setIsModalEditQuestionOpen] = useState(false);
+  const [editQuestionId, setEditQuestionId] = useState(0);
+
+  const columns: GridColDef[] = [
+    {
+      field: 'number',
+      headerName: 'Sequence',
+      width: 100,
+    },
+    {
+      field: 'title',
+      headerName: 'Title of question',
+      width: 400,
+    },
+    {
+      field: 'dateCreated',
+      headerName: 'Date Created',
+      width: 150,
+    },
+    {
+      field: 'thumbnail',
+      headerName: 'Thumbnail',
+      width: 300,
+      renderCell: (params) => {
+        if (params.row.thumbnail) {
+          return (
+            <img
+              src={params.row.thumbnail.toString()}
+              alt="thumbnail"
+              style={{
+                width: 60,
+                height: 60,
+                padding: '12px',
+                borderRadius: '50%',
+                objectFit: 'cover',
+              }}
+            />
+          );
+        }
+        return <div>No thumbmail</div>;
+      },
+    },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      minWidth: 150,
+      flex: 1,
+      renderCell: (params) => (
+        <Box
+          sx={{
+            display: 'flex',
+          }}
+        >
+          <IconButton
+            sx={{
+              color: colors.primary,
+            }}
+            onClick={() => {
+              setIsModalEditQuestionOpen(true);
+              setEditQuestionId(+params.id);
+            }}
+          >
+            <BorderColorOutlinedIcon />
+          </IconButton>
+
+          <IconButton
+            sx={{
+              ml: '8px',
+              color: 'red',
+            }}
+            onClick={() => {
+              handleDeleteQuestion(+params.id);
+            }}
+          >
+            <DeleteOutlineOutlinedIcon />
+          </IconButton>
+        </Box>
+      ),
+    },
+  ];
+  return (
+    <>
+      <div style={{ width: '100%', marginTop: '20px' }}>
+        <DataGrid
+          autoHeight
+          columns={columns}
+          rows={responseQuestionsData}
+          rowCount={rowCount}
+          pageSizeOptions={[5]}
+          loading={isLoading || isFetching}
+          paginationModel={paginationModel}
+          onPaginationModelChange={setPaginationModel}
+          paginationMode="server"
+        />
+      </div>
+      <EditQuestionModal
+        isModalEditQuestionOpen={isModalEditQuestionOpen}
+        setIsModalEditQuestionOpen={setIsModalEditQuestionOpen}
+        editQuestionId={editQuestionId}
+      />
+    </>
+  );
+};
+
+export default QuestionTable;

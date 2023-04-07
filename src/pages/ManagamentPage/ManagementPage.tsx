@@ -1,55 +1,26 @@
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Typography } from '@mui/material';
 import Box from '@mui/material/Box';
-import { DataGrid, GridColDef, GridRowsProp } from '@mui/x-data-grid';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import { GridRowsProp } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 import { useEffect, useMemo, useState } from 'react';
-import { Header } from '../../components/Header';
-import { useGetAllQuestionsQuery } from '../../store/apis/ManagementAPI/managementApi';
-import { QuestionRowType, formData } from './type';
-import Button from '@mui/material/Button';
-import { colors } from '../../constants';
-import Modal from '@mui/material/Modal';
-import * as yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
-import TextField from '@mui/material/TextField';
-
-const columns: GridColDef[] = [
-  {
-    field: 'number',
-    headerName: 'Sequence Number',
-    width: 150,
-    editable: true,
-  },
-  {
-    field: 'title',
-    headerName: 'Title of question',
-    width: 400,
-    editable: true,
-  },
-  {
-    field: 'dateCreated',
-    headerName: 'Date Created',
-    width: 150,
-    editable: true,
-  },
-  {
-    field: 'Thumbnail',
-    headerName: 'thumbnail',
-    width: 400,
-    renderCell: (params) =>
-      params.value ? (
-        <img
-          src={params.value}
-          alt="thumbnail"
-          style={{
-            width: 60,
-          }}
-        />
-      ) : (
-        <div>No thumbmail</div>
-      ),
-  },
-];
+import { toast } from 'react-toastify';
+import * as yup from 'yup';
+import { Header } from '../../components/Header';
+import { colors } from '../../constants';
+import {
+  useAddNewAnswerMutation,
+  useAddNewQuestionMutation,
+  useGetAllQuestionsQuery,
+} from '../../store/apis/ManagementAPI/managementApi';
+import AddQuestionModal from './AddQuestionModal';
+import QuestionTable from './QuestionTable';
+import { QuestionRowType, formData } from './type';
+import UserTable from './UserTable';
+import AddUserModal from './AddUserModal';
 
 const schema = yup
   .object({
@@ -63,7 +34,23 @@ const schema = yup
 
 const ManagementPage = () => {
   const [isModalAddQuestionOpen, setIsModalAddQuestionOpen] = useState(false);
-
+  const [isModalAddUserOpen, setIsModalAddUserOpen] = useState(false);
+  const [questionSearch, setQuestionSearch] = useState('');
+  const [userSearch, setUserSearch] = useState('');
+  const [correctAnswersChosen, setCorrectAnswersChosen] = useState({
+    answer1: true,
+    answer2: false,
+    answer3: false,
+    answer4: false,
+  });
+  const handleCorrectAnswersChosen = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setCorrectAnswersChosen({
+      ...correctAnswersChosen,
+      [event.target.name]: event.target.checked,
+    });
+  };
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 5,
@@ -71,14 +58,61 @@ const ManagementPage = () => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<formData>({
     resolver: yupResolver(schema),
     mode: 'onChange',
   });
+  const [addNewQuestion, { isLoading: addNewQuestionLoading }] =
+    useAddNewQuestionMutation();
 
-  const onAddNewQuestion = (data: formData) => {
+  const [addNewAnswers, { isLoading: addNewAnswersLoading }] =
+    useAddNewAnswerMutation();
+
+  const onAddNewQuestion = async (data: formData) => {
+    const {
+      data: { id: questionId },
+    } = await addNewQuestion({
+      title: data.title,
+      thumbnail_link: data.thumbnailLink || '',
+    }).unwrap();
+
     console.log(data);
+
+    const answers = [
+      { content: data.answer1, is_correct: correctAnswersChosen.answer1 },
+      { content: data.answer2, is_correct: correctAnswersChosen.answer2 },
+      { content: data.answer3, is_correct: correctAnswersChosen.answer3 },
+      { content: data.answer4, is_correct: correctAnswersChosen.answer4 },
+    ];
+
+    const promises = answers.map((answer) =>
+      addNewAnswers({ ...answer, questionId })
+    );
+
+    await Promise.all(promises);
+    toast('Add new question successuflly!');
+    setIsModalAddQuestionOpen(false);
+    reset({
+      title: '',
+      thumbnailLink: '',
+      answer1: '',
+      answer2: '',
+      answer3: '',
+      answer4: '',
+    });
+    setCorrectAnswersChosen({
+      answer1: true,
+      answer2: false,
+      answer3: false,
+      answer4: false,
+    });
+    try {
+    } catch (error) {
+      toast.error('Failed to add new question');
+      console.log(error);
+    }
   };
 
   const {
@@ -89,6 +123,7 @@ const ManagementPage = () => {
   } = useGetAllQuestionsQuery({
     page: paginationModel.page + 1,
     size: paginationModel.pageSize,
+    keyWord: questionSearch,
   });
 
   const [rowCount, setRowCount] = useState(allQuestions?.data?.total || 0);
@@ -114,8 +149,6 @@ const ManagementPage = () => {
     }));
   }, [allQuestions?.data?.result]);
 
-  console.log('responseQuestionsData: ', responseQuestionsData);
-
   if (!!error) {
     return <div>Error...</div>;
   }
@@ -123,118 +156,106 @@ const ManagementPage = () => {
   return (
     <Box sx={{ minHeight: '100vh', paddingTop: '64px' }}>
       <Header />
-      <Button
-        variant="contained"
+      {/* AddQuestionButton */}
+      <Typography variant="h4" sx={{ mt: 2 }}>
+        Questions Management
+      </Typography>
+      <Box
         sx={{
-          textTransform: 'none',
-          color: colors.white,
-          borderRadius: 8,
-          marginTop: 4,
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          gap: 2,
+          marginTop: 2,
+          mb: 2,
         }}
-        onClick={() => setIsModalAddQuestionOpen(true)}
       >
-        Add New Question
-      </Button>
-      <Modal
-        open={isModalAddQuestionOpen}
-        onClose={() => setIsModalAddQuestionOpen(false)}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box
-          sx={{
-            position: 'absolute' as 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 400,
-            bgcolor: 'background.paper',
-            boxShadow: 24,
-            p: 4,
-          }}
-        >
-          <TextField
-            label="Title"
-            type="string"
-            fullWidth
-            {...register('title')}
-            error={!!errors.title}
-            helperText={errors.title?.message?.toString()}
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            {...register('thumbnailLink')}
-            name="thumbnailLink"
-            label="Thumbnail Link"
-            fullWidth
-            autoComplete="true"
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            label="Answer 1"
-            type="string"
-            fullWidth
-            {...register('answer1')}
-            error={!!errors.answer1}
-            helperText={errors.answer1?.message?.toString()}
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            label="Answer 2"
-            type="string"
-            fullWidth
-            {...register('answer2')}
-            error={!!errors.answer2}
-            helperText={errors.answer2?.message?.toString()}
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            label="Answer 3"
-            type="string"
-            fullWidth
-            {...register('answer3')}
-            error={!!errors.answer3}
-            helperText={errors.answer3?.message?.toString()}
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            label="Answer 4"
-            type="string"
-            fullWidth
-            {...register('answer4')}
-            error={!!errors.answer4}
-            helperText={errors.answer4?.message?.toString()}
-            sx={{ mb: 2 }}
-          />
-          <Button
-            variant="contained"
-            sx={{
-              textTransform: 'none',
-              color: colors.white,
-              borderRadius: 8,
-              marginTop: 4,
-            }}
-            onClick={handleSubmit(onAddNewQuestion)}
-          >
-            Add New Question
-          </Button>
-        </Box>
-      </Modal>
-      <div style={{ width: '100%', marginTop: '20px', height: 500 }}>
-        <DataGrid
-          autoHeight
-          columns={columns}
-          rows={responseQuestionsData}
-          rowCount={rowCount}
-          pageSizeOptions={[5]}
-          loading={isLoading || isFetching}
-          paginationModel={paginationModel}
-          onPaginationModelChange={setPaginationModel}
-          paginationMode="server"
+        <TextField
+          label="Search"
+          type="string"
+          fullWidth
+          value={questionSearch}
+          onChange={(e) => setQuestionSearch(e.target.value)}
+          sx={{ flex: 1 }}
         />
-      </div>
+        <Button
+          variant="contained"
+          sx={{
+            textTransform: 'none',
+            color: colors.white,
+            borderRadius: 2,
+            height: 56,
+          }}
+          onClick={() => setIsModalAddQuestionOpen(true)}
+        >
+          Add New Question
+        </Button>
+      </Box>
+      {/* PopUpAddQuestion */}
+      <AddQuestionModal
+        isModalAddQuestionOpen={isModalAddQuestionOpen}
+        setIsModalAddQuestionOpen={setIsModalAddQuestionOpen}
+        register={register}
+        errors={errors}
+        correctAnswersChosen={correctAnswersChosen}
+        handleCorrectAnswersChosen={handleCorrectAnswersChosen}
+        handleSubmit={handleSubmit}
+        onAddNewQuestion={onAddNewQuestion}
+        addNewQuestionLoading={addNewQuestionLoading}
+        addNewAnswersLoading={addNewAnswersLoading}
+      />
+      {/* Table */}
+      <QuestionTable
+        responseQuestionsData={responseQuestionsData}
+        rowCount={rowCount}
+        isLoading={isLoading}
+        isFetching={isFetching}
+        paginationModel={paginationModel}
+        setPaginationModel={setPaginationModel}
+      />
+
+      <Typography variant="h4" sx={{ mt: 2 }}>
+        User Management
+      </Typography>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          gap: 2,
+          marginTop: 2,
+          mb: 2,
+        }}
+      >
+        <TextField
+          label="Search"
+          type="string"
+          fullWidth
+          value={userSearch}
+          onChange={(e) => setUserSearch(e.target.value)}
+          sx={{ flex: 1 }}
+        />
+        <Button
+          variant="contained"
+          sx={{
+            textTransform: 'none',
+            color: colors.white,
+            borderRadius: 2,
+            height: 56,
+          }}
+          onClick={() => setIsModalAddUserOpen(true)}
+        >
+          Add New User
+        </Button>
+      </Box>
+      <UserTable userSearch={userSearch} />
+      <AddUserModal
+        isModalAddUserOpen={isModalAddUserOpen}
+        setIsModalAddUserOpen={setIsModalAddUserOpen}
+      />
     </Box>
   );
 };
-
 export default ManagementPage;

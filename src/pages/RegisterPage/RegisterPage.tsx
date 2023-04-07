@@ -153,7 +153,7 @@ const RegisterPage = () => {
           onClick={handleSubmit(onSubmit)}
         >
           {isLoading || isLoginLoading ? (
-            <CircularProgress color="success" size={30} />
+            <CircularProgress color="error" size={30} />
           ) : (
             'Register'
           )}

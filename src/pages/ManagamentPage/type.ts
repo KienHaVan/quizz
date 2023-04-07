@@ -14,3 +14,13 @@ export interface formData {
   answer3: string;
   answer4: string;
 }
+
+export interface userFormData {
+  name: string;
+  email: string;
+  password: string;
+}
+export interface userEditFormData {
+  name: string;
+  email: string;
+}

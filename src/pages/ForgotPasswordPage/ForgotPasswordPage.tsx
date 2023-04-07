@@ -99,11 +99,7 @@ const ForgotPasswordPage = () => {
           }}
           onClick={handleSubmit(onSubmit)}
         >
-          {isLoading ? (
-            <CircularProgress color="success" size={30} />
-          ) : (
-            'Submit'
-          )}
+          {isLoading ? <CircularProgress color="error" size={30} /> : 'Submit'}
         </Button>
       </Box>
     </Box>

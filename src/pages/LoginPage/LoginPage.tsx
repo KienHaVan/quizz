@@ -145,7 +145,7 @@ const LoginPage = () => {
           }}
           onClick={handleSubmit(onSubmit)}
         >
-          {isLoading ? <CircularProgress color="success" size={30} /> : 'Login'}
+          {isLoading ? <CircularProgress color="error" size={30} /> : 'Login'}
         </Button>
         <Link
           to="/register"
