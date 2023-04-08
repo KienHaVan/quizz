@@ -151,16 +151,16 @@ const UserTable = ({ userSearch }: { userSearch: string }) => {
     if (!allUsers?.data?.result) {
       return [];
     }
-    return allUsers?.data?.result.map((user: any) => ({
+    return allUsers?.data?.result.map((user: any, index: number) => ({
       id: user.id,
-      number: user.id,
+      number: index + paginationModel.page * paginationModel.pageSize + 1,
       name: user.name,
       email: user.email,
       roles: user.roles.join(', '),
       dateCreated: dayjs(user.created_at).format('DD/MM/YYYY'),
       avatar: user.avatar_link || '',
     }));
-  }, [allUsers?.data?.result]);
+  }, [allUsers?.data?.result, paginationModel.page, paginationModel.pageSize]);
 
   if (!!error) {
     return <div>Error...</div>;

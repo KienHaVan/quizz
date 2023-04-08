@@ -140,14 +140,18 @@ const ManagementPage = () => {
     if (!allQuestions?.data?.result) {
       return [];
     }
-    return allQuestions?.data?.result.map((question: any) => ({
+    return allQuestions?.data?.result.map((question: any, index: number) => ({
       id: question.id,
-      number: question.id,
+      number: index + paginationModel.page * paginationModel.pageSize + 1,
       title: question.title,
       dateCreated: dayjs(question.createdAt).format('DD/MM/YYYY'),
       thumbnail: question.thumbnail_link || '',
     }));
-  }, [allQuestions?.data?.result]);
+  }, [
+    allQuestions?.data?.result,
+    paginationModel.page,
+    paginationModel.pageSize,
+  ]);
 
   if (!!error) {
     return <div>Error...</div>;
@@ -172,7 +176,7 @@ const ManagementPage = () => {
         }}
       >
         <TextField
-          label="Search"
+          label="Question Search"
           type="string"
           fullWidth
           value={questionSearch}
@@ -230,7 +234,7 @@ const ManagementPage = () => {
         }}
       >
         <TextField
-          label="Search"
+          label="User Search"
           type="string"
           fullWidth
           value={userSearch}
