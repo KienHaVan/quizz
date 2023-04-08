@@ -40,6 +40,7 @@ const EditQuestionModal = ({
   const { data: questionData } = useGetQuestionQuery({
     questionId: editQuestionId,
   });
+  console.log(questionData);
 
   const [correctAnswersChosen, setCorrectAnswersChosen] = useState({
     answer1: true,
@@ -72,7 +73,7 @@ const EditQuestionModal = ({
     formState: { errors },
   } = useForm<formData>({
     resolver: yupResolver(schema),
-    // mode: 'onChange',
+    mode: 'onChange',
     defaultValues: defaultValues,
   });
 
@@ -80,7 +81,7 @@ const EditQuestionModal = ({
     if (questionData) {
       const newDefaultValues = {
         title: questionData?.data?.title || '',
-        thumbnailLink: questionData?.data?.thumbnailLink || '',
+        thumbnailLink: questionData?.data?.thumbnail_link || '',
         answer1: questionData?.data?.answers[0]?.content || '',
         answer2: questionData?.data?.answers[1]?.content || '',
         answer3: questionData?.data?.answers[2]?.content || '',
