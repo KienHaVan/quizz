@@ -1,3 +1,4 @@
+import { yupResolver } from '@hookform/resolvers/yup';
 import {
   Checkbox,
   FormControlLabel,
@@ -9,20 +10,104 @@ import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
+import * as yup from 'yup';
 import { colors } from '../../constants';
+import {
+  useAddNewAnswerMutation,
+  useAddNewQuestionMutation,
+} from '../../store/apis/ManagementAPI/managementApi';
+import { formData } from './type';
+
+const schema = yup
+  .object({
+    title: yup.string().required('Title is required'),
+    answer1: yup.string().required('Answer 1 is required'),
+    answer2: yup.string().required('Answer 1 is required'),
+    answer3: yup.string().required('Answer 1 is required'),
+    answer4: yup.string().required('Answer 1 is required'),
+  })
+  .required();
 
 const AddQuestionModal = ({
   isModalAddQuestionOpen,
   setIsModalAddQuestionOpen,
-  register,
-  errors,
-  correctAnswersChosen,
-  handleCorrectAnswersChosen,
-  handleSubmit,
-  onAddNewQuestion,
-  addNewQuestionLoading,
-  addNewAnswersLoading,
 }: any) => {
+  const [correctAnswersChosen, setCorrectAnswersChosen] = useState({
+    answer1: true,
+    answer2: false,
+    answer3: false,
+    answer4: false,
+  });
+  const handleCorrectAnswersChosen = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setCorrectAnswersChosen({
+      ...correctAnswersChosen,
+      [event.target.name]: event.target.checked,
+    });
+  };
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<formData>({
+    resolver: yupResolver(schema),
+    mode: 'onChange',
+  });
+  const [addNewQuestion, { isLoading: addNewQuestionLoading }] =
+    useAddNewQuestionMutation();
+
+  const [addNewAnswers, { isLoading: addNewAnswersLoading }] =
+    useAddNewAnswerMutation();
+
+  const onAddNewQuestion = async (data: formData) => {
+    const {
+      data: { id: questionId },
+    } = await addNewQuestion({
+      title: data.title,
+      thumbnail_link: data.thumbnailLink || '',
+    }).unwrap();
+
+    console.log(data);
+
+    const answers = [
+      { content: data.answer1, is_correct: correctAnswersChosen.answer1 },
+      { content: data.answer2, is_correct: correctAnswersChosen.answer2 },
+      { content: data.answer3, is_correct: correctAnswersChosen.answer3 },
+      { content: data.answer4, is_correct: correctAnswersChosen.answer4 },
+    ];
+
+    const promises = answers.map((answer) =>
+      addNewAnswers({ ...answer, questionId })
+    );
+
+    await Promise.all(promises);
+    toast('Add new question successuflly!');
+    setIsModalAddQuestionOpen(false);
+    reset({
+      title: '',
+      thumbnailLink: '',
+      answer1: '',
+      answer2: '',
+      answer3: '',
+      answer4: '',
+    });
+    setCorrectAnswersChosen({
+      answer1: true,
+      answer2: false,
+      answer3: false,
+      answer4: false,
+    });
+    try {
+    } catch (error) {
+      toast.error('Failed to add new question');
+      console.log(error);
+    }
+  };
   return (
     <Modal
       open={isModalAddQuestionOpen}

@@ -2,22 +2,60 @@ import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import { IconButton } from '@mui/material';
 import Box from '@mui/material/Box';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { colors } from '../../constants';
-import { useDeleteQuestionMutation } from '../../store/apis/ManagementAPI/managementApi';
+import { DataGrid, GridColDef, GridRowsProp } from '@mui/x-data-grid';
+import dayjs from 'dayjs';
+import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
+import { colors } from '../../constants';
+import {
+  useDeleteQuestionMutation,
+  useGetAllQuestionsQuery,
+} from '../../store/apis/ManagementAPI/managementApi';
 import EditQuestionModal from './EditQuestionModal';
-import { useState } from 'react';
+import { QuestionRowType } from './type';
 
-const QuestionTable = ({
-  responseQuestionsData,
-  rowCount,
-  isLoading,
-  isFetching,
-  paginationModel,
-  setPaginationModel,
-}: any) => {
+const QuestionTable = ({ questionSearch }: any) => {
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: 5,
+  });
+  const {
+    data: allQuestions,
+    error,
+    isLoading,
+    isFetching,
+  } = useGetAllQuestionsQuery({
+    page: paginationModel.page + 1,
+    size: paginationModel.pageSize,
+    keyWord: questionSearch,
+  });
+  const [rowCount, setRowCount] = useState(allQuestions?.data?.total || 0);
+
+  useEffect(() => {
+    setRowCount((prevRowCount: any) =>
+      allQuestions?.data?.total !== undefined
+        ? allQuestions?.data?.total
+        : prevRowCount
+    );
+  }, [allQuestions?.data?.total]);
+
+  const responseQuestionsData: GridRowsProp<QuestionRowType> = useMemo(() => {
+    if (!allQuestions?.data?.result) {
+      return [];
+    }
+    return allQuestions?.data?.result.map((question: any, index: number) => ({
+      id: question.id,
+      number: index + paginationModel.page * paginationModel.pageSize + 1,
+      title: question.title,
+      dateCreated: dayjs(question.createdAt).format('DD/MM/YYYY'),
+      thumbnail: question.thumbnail_link || '',
+    }));
+  }, [
+    allQuestions?.data?.result,
+    paginationModel.page,
+    paginationModel.pageSize,
+  ]);
   const [deleteQuestion] = useDeleteQuestionMutation();
   const handleDeleteQuestion = (questionId: number) => {
     try {
@@ -117,6 +155,9 @@ const QuestionTable = ({
       ),
     },
   ];
+  if (!!error) {
+    return <div>Error...</div>;
+  }
   return (
     <>
       <div style={{ width: '100%', marginTop: '20px' }}>

@@ -2,19 +2,16 @@ import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import { IconButton } from '@mui/material';
 import Box from '@mui/material/Box';
-import { GridRowsProp } from '@mui/x-data-grid';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { colors } from '../../constants';
-import { useDeleteQuestionMutation } from '../../store/apis/ManagementAPI/managementApi';
+import { DataGrid, GridColDef, GridRowsProp } from '@mui/x-data-grid';
+import dayjs from 'dayjs';
+import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
-import EditQuestionModal from './EditQuestionModal';
-import { useEffect, useMemo, useState } from 'react';
+import { colors } from '../../constants';
 import {
   useDeleteUserMutation,
   useGetAllUsersQuery,
 } from '../../store/apis/UserManagementAPI/userManagementApi';
-import dayjs from 'dayjs';
 import EditUserModal from './EditUserModal';
 
 const UserTable = ({ userSearch }: { userSearch: string }) => {
