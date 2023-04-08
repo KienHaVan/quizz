@@ -1,6 +1,6 @@
 import { AES, enc } from 'crypto-js';
 
-const SECRET_KEY = 'kienvan';
+const SECRET_KEY = process.env.REACT_APP_SECRET_KEY || '';
 
 const encryptData = (name: string, data: any) => {
   const encrypted = AES.encrypt(JSON.stringify(data), SECRET_KEY).toString();

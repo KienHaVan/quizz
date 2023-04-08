@@ -20,7 +20,7 @@ import Modal from '@mui/material/Modal';
 import { useNavigate } from 'react-router';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
-
+import { Link } from 'react-router-dom';
 const QuestionContent = ({ number }: { number: number }) => {
   const { data, error, isLoading } = useGetQuestionsQuery(number);
   const listQuestions = data ? data.data : [];
@@ -37,6 +37,9 @@ const QuestionContent = ({ number }: { number: number }) => {
   const maxSteps = listQuestions.length;
   const navigate = useNavigate();
 
+  const playAgain = () => {
+    navigate(0);
+  };
   const [
     submitQuestions,
     {
@@ -152,7 +155,16 @@ const QuestionContent = ({ number }: { number: number }) => {
           <Typography variant="h4" sx={{ color: colors.white }}>
             {listQuestions[activeStep].title}
           </Typography>
-          <img src={Images.LOGO} alt="" style={{ width: 300, marginTop: 12 }} />
+          <img
+            src={listQuestions[activeStep].thumbnail_link || Images.LOGO}
+            alt=""
+            style={{
+              width: 300,
+              marginTop: 12,
+              maxHeight: 300,
+              objectFit: 'cover',
+            }}
+          />
         </Box>
 
         <Box
@@ -262,7 +274,9 @@ const QuestionContent = ({ number }: { number: number }) => {
             <Button
               variant="contained"
               sx={{ px: 4, py: 2, minWidth: '150px', color: colors.white }}
-              onClick={() => navigate('/', { replace: true })}
+              onClick={() => playAgain()}
+              // component={Link}
+              // to="/"
             >
               Play Again
             </Button>

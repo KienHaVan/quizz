@@ -12,6 +12,7 @@ import { useLocation } from 'react-router';
 import { Images } from '../../assets';
 import { Header } from '../../components/Header';
 import { colors } from '../../constants';
+import { useNavigate } from 'react-router-dom';
 
 const ReviewPage = () => {
   const { state } = useLocation();
@@ -19,6 +20,7 @@ const ReviewPage = () => {
   const theme = useTheme();
   const [activeStep, setActiveStep] = useState(0);
   const maxSteps = listQuestionChecked.length;
+  const navigate = useNavigate();
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -61,7 +63,12 @@ const ReviewPage = () => {
           <img
             src={listQuestionChecked[activeStep].thumbnail_link || Images.LOGO}
             alt=""
-            style={{ width: 300, marginTop: 12 }}
+            style={{
+              width: 300,
+              marginTop: 12,
+              maxHeight: 300,
+              objectFit: 'cover',
+            }}
           />
         </Box>
 
@@ -124,18 +131,25 @@ const ReviewPage = () => {
           activeStep={activeStep}
           sx={{ px: 20, marginTop: 'auto', mb: 2 }}
           nextButton={
-            <Button
-              size="small"
-              onClick={handleNext}
-              disabled={activeStep === maxSteps - 1}
-            >
-              Next
-              {theme.direction === 'rtl' ? (
-                <KeyboardArrowLeft />
-              ) : (
-                <KeyboardArrowRight />
-              )}
-            </Button>
+            activeStep !== maxSteps - 1 ? (
+              <Button size="small" onClick={handleNext}>
+                Next
+                {theme.direction === 'rtl' ? (
+                  <KeyboardArrowLeft />
+                ) : (
+                  <KeyboardArrowRight />
+                )}
+              </Button>
+            ) : (
+              <Button size="small" onClick={() => navigate('/')}>
+                Play Again
+                {theme.direction === 'rtl' ? (
+                  <KeyboardArrowLeft />
+                ) : (
+                  <KeyboardArrowRight />
+                )}
+              </Button>
+            )
           }
           backButton={
             <Button

@@ -10,7 +10,7 @@ import { RootState } from '..';
 import { logOut, setNewAccessToken } from '../slices/authSlice';
 import { RefreshTokenResponse } from './AuthAPI/types';
 
-const BASE_URL = 'https://quangnh.xyz/v1/';
+const BASE_URL = process.env.REACT_APP_BASE_URL || '';
 
 const mutex = new Mutex();
 

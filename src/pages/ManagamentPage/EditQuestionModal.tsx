@@ -40,7 +40,6 @@ const EditQuestionModal = ({
   const { data: questionData } = useGetQuestionQuery({
     questionId: editQuestionId,
   });
-  console.log(questionData);
 
   const [correctAnswersChosen, setCorrectAnswersChosen] = useState({
     answer1: true,
