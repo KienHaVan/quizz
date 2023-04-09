@@ -32,7 +32,7 @@ const Header = () => {
   const handleLogOut = async () => {
     try {
       dispatch(logOut());
-      navigate('/', { replace: true });
+      navigate('/');
     } catch (error) {
       const err = error as ErrorResponseType;
       console.error(err.data.message);
