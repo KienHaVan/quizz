@@ -103,10 +103,10 @@ const Header = () => {
                 component="nav"
                 aria-label="mailbox folders"
               >
-                <ListItemButton>
+                {/* <ListItemButton>
                   <ListItemText primary="Settings" />
-                </ListItemButton>
-                <Divider />
+                </ListItemButton> */}
+                {/* <Divider /> */}
                 <ListItemButton onClick={handleLogOut}>
                   <ListItemText primary="LogOut" />
                 </ListItemButton>
