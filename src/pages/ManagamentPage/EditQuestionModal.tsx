@@ -4,13 +4,14 @@ import {
   FormControlLabel,
   FormGroup,
   FormLabel,
+  Avatar,
 } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import * as yup from 'yup';
@@ -21,6 +22,7 @@ import {
   useUpdateQuestionMutation,
 } from '../../store/apis/ManagementAPI/managementApi';
 import { formData } from './type';
+import { useUploadThumbnailMutation } from '../../store/apis/QuestionAPI/questionApi';
 
 const schema = yup
   .object({
@@ -69,6 +71,7 @@ const EditQuestionModal = ({
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm<formData>({
     resolver: yupResolver(schema),
@@ -94,6 +97,7 @@ const EditQuestionModal = ({
       };
       setCorrectAnswersChosen(newCorrectAnswersChosen);
       setDefaultValues(newDefaultValues);
+      setThumbnailUrl(questionData?.data?.thumbnail_link);
       reset(newDefaultValues);
     }
   }, [questionData, reset]);
@@ -112,9 +116,6 @@ const EditQuestionModal = ({
         thumbnail_link: data.thumbnailLink || '',
         questionId: editQuestionId,
       }).unwrap();
-      console.log(answers);
-      console.log(data);
-      console.log(correctAnswersChosen);
 
       const updateAnswerPromises = [
         updateAnswer({
@@ -164,6 +165,38 @@ const EditQuestionModal = ({
       toast.error('Failed update question!');
     }
   };
+  const [uploadThumbnail] = useUploadThumbnailMutation();
+  const [thumbnailUrl, setThumbnailUrl] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const handleUploadThumbnail = async (
+    event: ChangeEvent<HTMLInputElement>
+  ) => {
+    const { files } = event.target;
+    if (!files || !files[0]) {
+      return;
+    }
+    const formData = new FormData();
+    formData.append('thumbnail', files[0]);
+
+    try {
+      const response = await toast.promise(
+        () => uploadThumbnail(formData).unwrap(),
+        {
+          pending: 'Uploading...',
+          success: 'Uploaded thumbnail successfully',
+          error: 'Failed to upload thumbnail',
+        }
+      );
+
+      setValue('thumbnailLink', response.data);
+      setThumbnailUrl(response.data);
+    } catch (error) {
+      toast.error('Faild to upload thumbnail');
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
   return (
     <Modal
       open={isModalEditQuestionOpen}
@@ -203,7 +236,7 @@ const EditQuestionModal = ({
             sx={{ mb: 2 }}
             autoFocus
           />
-          <TextField
+          {/* <TextField
             {...register('thumbnailLink')}
             name="thumbnailLink"
             label="Thumbnail Link"
@@ -211,7 +244,32 @@ const EditQuestionModal = ({
             autoComplete="true"
             sx={{ mb: 2 }}
             autoFocus
-          />
+          /> */}
+          <Box display="flex" justifyContent="center">
+            <Avatar
+              alt="thumbnail"
+              sx={{
+                width: '50px',
+                height: '50px',
+              }}
+              src={thumbnailUrl}
+            />
+          </Box>
+          <Button
+            variant="contained"
+            component="label"
+            sx={{ width: '300px', height: '56px', color: colors.white }}
+          >
+            Upload image
+            <input
+              hidden
+              accept="image/*"
+              multiple
+              type="file"
+              onChange={handleUploadThumbnail}
+              ref={fileInputRef}
+            />
+          </Button>
         </Box>
         <Box
           sx={{

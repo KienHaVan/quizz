@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useLayoutEffect } from 'react';
 import { useLocation } from 'react-router';
 import { useAppDispatch, useAppSelector } from '../store';
 import {
@@ -18,7 +18,7 @@ const Router = () => {
   const user = useAppSelector(selectCurrentUser);
   const token = useAppSelector(selectCurrentToken);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const auth = decryptData('auth');
     if (!auth) {
       setIsLoading(true);

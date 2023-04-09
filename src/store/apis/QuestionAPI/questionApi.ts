@@ -12,8 +12,18 @@ export const questionApiSlice = apiSlice.injectEndpoints({
         body: listQuestionSubmitted,
       }),
     }),
+    uploadThumbnail: builder.mutation({
+      query: (data) => ({
+        url: 'questions/upload-thumbnail',
+        method: 'POST',
+        body: data,
+      }),
+    }),
   }),
 });
 
-export const { useGetQuestionsQuery, useSubmitQuestionsMutation } =
-  questionApiSlice;
+export const {
+  useGetQuestionsQuery,
+  useSubmitQuestionsMutation,
+  useUploadThumbnailMutation,
+} = questionApiSlice;

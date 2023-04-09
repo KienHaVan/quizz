@@ -71,7 +71,12 @@ const Header = () => {
           </IconButton>
           <Box
             component="div"
-            sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
+            sx={{
+              flexGrow: 1,
+              display: { xs: 'none', sm: 'block' },
+              cursor: 'pointer',
+            }}
+            onClick={() => navigate('/')}
           >
             <img src={Images.LOGO} alt="" style={{ width: 100 }} />
           </Box>
