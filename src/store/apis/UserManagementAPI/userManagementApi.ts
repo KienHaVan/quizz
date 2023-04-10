@@ -11,7 +11,7 @@ export const userManagementSlice = apiSlice.injectEndpoints({
       providesTags: (result) =>
         result
           ? [
-              ...result.data.result.map(({ id }: any) => ({
+              ...result.data.result.map(({ id }: { id: number }) => ({
                 type: 'User' as const,
                 id,
               })),

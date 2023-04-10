@@ -29,7 +29,15 @@ const schema = yup
   })
   .required();
 
-const AddUserModal = ({ isModalAddUserOpen, setIsModalAddUserOpen }: any) => {
+interface AddUserModalPropType {
+  isModalAddUserOpen: boolean;
+  setIsModalAddUserOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const AddUserModal = ({
+  isModalAddUserOpen,
+  setIsModalAddUserOpen,
+}: AddUserModalPropType) => {
   const [roleChosen, setRoleChosen] = useState({
     user: true,
     admin: false,

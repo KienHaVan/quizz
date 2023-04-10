@@ -34,11 +34,17 @@ const schema = yup
   })
   .required();
 
+interface EditQuestionModalPropType {
+  isModalEditQuestionOpen: boolean;
+  setIsModalEditQuestionOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  editQuestionId: number;
+}
+
 const EditQuestionModal = ({
   isModalEditQuestionOpen,
   setIsModalEditQuestionOpen,
   editQuestionId,
-}: any) => {
+}: EditQuestionModalPropType) => {
   const { data: questionData } = useGetQuestionQuery({
     questionId: editQuestionId,
   });

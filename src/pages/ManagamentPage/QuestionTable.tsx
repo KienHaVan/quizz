@@ -13,9 +13,9 @@ import {
   useGetAllQuestionsQuery,
 } from '../../store/apis/ManagementAPI/managementApi';
 import EditQuestionModal from './EditQuestionModal';
-import { QuestionRowType } from './type';
+import { AllQuestionType, QuestionRowType } from './type';
 
-const QuestionTable = ({ questionSearch }: any) => {
+const QuestionTable = ({ questionSearch }: { questionSearch: string }) => {
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 5,
@@ -33,7 +33,7 @@ const QuestionTable = ({ questionSearch }: any) => {
   const [rowCount, setRowCount] = useState(allQuestions?.data?.total || 0);
 
   useEffect(() => {
-    setRowCount((prevRowCount: any) =>
+    setRowCount((prevRowCount: number) =>
       allQuestions?.data?.total !== undefined
         ? allQuestions?.data?.total
         : prevRowCount
@@ -44,13 +44,16 @@ const QuestionTable = ({ questionSearch }: any) => {
     if (!allQuestions?.data?.result) {
       return [];
     }
-    return allQuestions?.data?.result.map((question: any, index: number) => ({
-      id: question.id,
-      number: index + paginationModel.page * paginationModel.pageSize + 1,
-      title: question.title,
-      dateCreated: dayjs(question.createdAt).format('DD/MM/YYYY'),
-      thumbnail: question.thumbnail_link || '',
-    }));
+
+    return allQuestions?.data?.result.map(
+      (question: AllQuestionType, index: number) => ({
+        id: question.id,
+        number: index + paginationModel.page * paginationModel.pageSize + 1,
+        title: question.title,
+        dateCreated: dayjs(question.createdAt).format('DD/MM/YYYY'),
+        thumbnail: question.thumbnail_link || '',
+      })
+    );
   }, [
     allQuestions?.data?.result,
     paginationModel.page,

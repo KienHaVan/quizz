@@ -3,6 +3,8 @@ import { AES, enc } from 'crypto-js';
 const SECRET_KEY = process.env.REACT_APP_SECRET_KEY || '';
 
 const encryptData = (name: string, data: any) => {
+  console.log(data);
+
   const encrypted = AES.encrypt(JSON.stringify(data), SECRET_KEY).toString();
   localStorage.setItem(name, encrypted);
 };

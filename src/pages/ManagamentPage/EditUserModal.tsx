@@ -28,11 +28,17 @@ const schema = yup
   })
   .required();
 
+interface EditUserModalPropType {
+  isModalEditUserOpen: boolean;
+  setIsModalEditUserOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  userId: number;
+}
+
 const EditUserModal = ({
   isModalEditUserOpen,
   setIsModalEditUserOpen,
   userId,
-}: any) => {
+}: EditUserModalPropType) => {
   const { data: userData } = useGetUserQuery({
     userId,
   });

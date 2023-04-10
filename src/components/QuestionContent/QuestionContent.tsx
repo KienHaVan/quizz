@@ -21,13 +21,21 @@ import { useNavigate } from 'react-router';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Link } from 'react-router-dom';
+import {
+  AnswerType,
+  ListQuestionCheckedType,
+  ListQuestionSubmittedType,
+  SubmitResponseDataType,
+} from './type';
 const QuestionContent = ({ number }: { number: number }) => {
   const { data, error, isLoading } = useGetQuestionsQuery(number);
   const listQuestions = data ? data.data : [];
-  const [listAnswers, setListAnswers] = useState<any>([]);
-  const [listQuestionSubmitted, setListQuestionSubmitted] = useState<any>([]);
+  const [listAnswers, setListAnswers] = useState<number[]>([]);
+  const [listQuestionSubmitted, setListQuestionSubmitted] = useState<
+    ListQuestionSubmittedType[]
+  >([]);
 
-  const [allAnswers, setAllAnswers] = useState<any>([]);
+  const [allAnswers, setAllAnswers] = useState<number[]>([]);
   const [openModalResults, setOpenModalResults] = useState(false);
   const handleOpenModal = () => setOpenModalResults(true);
   const handleClose = () => setOpenModalResults(false);
@@ -53,7 +61,9 @@ const QuestionContent = ({ number }: { number: number }) => {
     let theScore;
     if (!isSubmittingQuestions && isSubmitedSuccess) {
       theScore = submitResponseData.data.listQuestionChecked.reduce(
-        (acc: number, item: any) => {
+        (acc: number, item: ListQuestionCheckedType) => {
+          console.log(item);
+
           if (item.scoreThisQuestion === 1) {
             return acc + 1;
           }
@@ -69,7 +79,7 @@ const QuestionContent = ({ number }: { number: number }) => {
     setListAnswers([]);
   }, [activeStep]);
 
-  const handleNext = (id: any) => {
+  const handleNext = (id: number) => {
     if (listAnswers.length === 0) {
       toast.error('Choose at least 1 answer!');
       return;
@@ -110,6 +120,10 @@ const QuestionContent = ({ number }: { number: number }) => {
         }
       });
     }
+    console.log(
+      '🚀 ~ file: QuestionContent.tsx:113 ~ handleNext ~ listQuestionSubmitted:',
+      listQuestionSubmitted
+    );
   };
 
   const handleBack = () => {
@@ -183,7 +197,7 @@ const QuestionContent = ({ number }: { number: number }) => {
             direction={{ xs: 'column', sm: 'row' }}
             spacing={{ xs: 1, sm: 2, md: 4 }}
           >
-            {listQuestions[activeStep].answers.map((item: any) => (
+            {listQuestions[activeStep].answers.map((item: AnswerType) => (
               <Button
                 variant="contained"
                 color={allAnswers.includes(item.id) ? 'primary' : 'info'}
@@ -194,7 +208,7 @@ const QuestionContent = ({ number }: { number: number }) => {
                   setAllAnswers([...allAnswers, item.id]);
                 }}
               >
-                {item.content || item.answer}
+                {item.content}
               </Button>
             ))}
           </Stack>

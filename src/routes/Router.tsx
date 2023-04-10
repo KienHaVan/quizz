@@ -1,5 +1,5 @@
-import { useEffect, useState, useLayoutEffect } from 'react';
-import { useLocation } from 'react-router';
+import { useLayoutEffect, useState } from 'react';
+import { LoadingPage } from '../pages/LoadingPage';
 import { useAppDispatch, useAppSelector } from '../store';
 import {
   initCredentials,
@@ -10,7 +10,6 @@ import { decryptData } from '../utils/cryptData';
 import AdminRoutes from './AdminRoutes';
 import PublicRoutes from './PublicRoutes';
 import UserRoutes from './UserRoutes';
-import { LoadingPage } from '../pages/LoadingPage';
 
 const Router = () => {
   const [isLoading, setIsLoading] = useState(false);

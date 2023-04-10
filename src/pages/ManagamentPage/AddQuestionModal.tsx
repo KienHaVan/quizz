@@ -33,10 +33,15 @@ const schema = yup
   })
   .required();
 
+interface AddQuestionModalPropType {
+  isModalAddQuestionOpen: boolean;
+  setIsModalAddQuestionOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 const AddQuestionModal = ({
   isModalAddQuestionOpen,
   setIsModalAddQuestionOpen,
-}: any) => {
+}: AddQuestionModalPropType) => {
   const [correctAnswersChosen, setCorrectAnswersChosen] = useState({
     answer1: true,
     answer2: false,

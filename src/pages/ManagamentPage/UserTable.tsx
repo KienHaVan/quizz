@@ -13,6 +13,7 @@ import {
   useGetAllUsersQuery,
 } from '../../store/apis/UserManagementAPI/userManagementApi';
 import EditUserModal from './EditUserModal';
+import { AllUserResultType, ResponseUsersDataGridRowType } from './type';
 
 const UserTable = ({ userSearch }: { userSearch: string }) => {
   const [paginationModel, setPaginationModel] = useState({
@@ -140,24 +141,31 @@ const UserTable = ({ userSearch }: { userSearch: string }) => {
   });
   const [rowCount, setRowCount] = useState(allUsers?.data?.total || 0);
   useEffect(() => {
-    setRowCount((prevRowCount: any) =>
+    setRowCount((prevRowCount: number) =>
       allUsers?.data?.total !== undefined ? allUsers?.data?.total : prevRowCount
     );
   }, [allUsers?.data?.total]);
-  const responseUsersData: GridRowsProp<any> = useMemo(() => {
-    if (!allUsers?.data?.result) {
-      return [];
-    }
-    return allUsers?.data?.result.map((user: any, index: number) => ({
-      id: user.id,
-      number: index + paginationModel.page * paginationModel.pageSize + 1,
-      name: user.name,
-      email: user.email,
-      roles: user.roles.join(', '),
-      dateCreated: dayjs(user.created_at).format('DD/MM/YYYY'),
-      avatar: user.avatar_link || '',
-    }));
-  }, [allUsers?.data?.result, paginationModel.page, paginationModel.pageSize]);
+  const responseUsersData: GridRowsProp<ResponseUsersDataGridRowType> =
+    useMemo(() => {
+      if (!allUsers?.data?.result) {
+        return [];
+      }
+      return allUsers?.data?.result.map(
+        (user: AllUserResultType, index: number) => ({
+          id: user.id,
+          number: index + paginationModel.page * paginationModel.pageSize + 1,
+          name: user.name,
+          email: user.email,
+          roles: user.roles.join(', '),
+          dateCreated: dayjs(user.created_at).format('DD/MM/YYYY'),
+          avatar: user.avatar_link || '',
+        })
+      );
+    }, [
+      allUsers?.data?.result,
+      paginationModel.page,
+      paginationModel.pageSize,
+    ]);
 
   if (!!error) {
     return <div>Error...</div>;

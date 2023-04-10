@@ -13,10 +13,12 @@ import { Images } from '../../assets';
 import { Header } from '../../components/Header';
 import { colors } from '../../constants';
 import { useNavigate } from 'react-router-dom';
+import { ListQuestionChecked } from './type';
 
 const ReviewPage = () => {
   const { state } = useLocation();
-  const listQuestionChecked = state.data.data.listQuestionChecked;
+  const listQuestionChecked: ListQuestionChecked[] =
+    state.data.data.listQuestionChecked;
   const theme = useTheme();
   const [activeStep, setActiveStep] = useState(0);
   const maxSteps = listQuestionChecked.length;
@@ -89,14 +91,14 @@ const ReviewPage = () => {
             direction={{ xs: 'column', sm: 'row' }}
             spacing={{ xs: 1, sm: 2, md: 4 }}
           >
-            {listQuestionChecked[activeStep].answers.map((item: any) => (
+            {listQuestionChecked[activeStep].answers.map((item) => (
               <Button
                 variant="contained"
                 color={item.is_correct ? 'success' : 'info'}
                 sx={{ px: 4, py: 2 }}
                 key={nanoid()}
               >
-                {item.content || item.answer}
+                {item.content}
               </Button>
             ))}
           </Stack>
@@ -106,7 +108,7 @@ const ReviewPage = () => {
             direction={{ xs: 'column', sm: 'row' }}
             spacing={{ xs: 1, sm: 2, md: 4 }}
           >
-            {listQuestionChecked[activeStep].answers.map((item: any) => (
+            {listQuestionChecked[activeStep].answers.map((item) => (
               <Button
                 variant="contained"
                 color={
@@ -118,7 +120,7 @@ const ReviewPage = () => {
                 sx={{ px: 4, py: 2 }}
                 key={nanoid()}
               >
-                {item.content || item.answer}
+                {item.content}
               </Button>
             ))}
           </Stack>
