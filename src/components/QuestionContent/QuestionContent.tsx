@@ -1,31 +1,29 @@
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+import Backdrop from '@mui/material/Backdrop';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import MobileStepper from '@mui/material/MobileStepper';
+import Modal from '@mui/material/Modal';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useTheme } from '@mui/material/styles';
+import { nanoid } from 'nanoid';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
+import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 import { Images } from '../../assets';
 import { colors } from '../../constants';
 import {
   useGetQuestionsQuery,
   useSubmitQuestionsMutation,
 } from '../../store/apis/QuestionAPI/questionApi';
-import MobileStepper from '@mui/material/MobileStepper';
-import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
-import { useTheme } from '@mui/material/styles';
-import { nanoid } from 'nanoid';
-import { toast } from 'react-toastify';
-import Swal from 'sweetalert2';
-import Modal from '@mui/material/Modal';
-import { useNavigate } from 'react-router';
-import Backdrop from '@mui/material/Backdrop';
-import CircularProgress from '@mui/material/CircularProgress';
-import { Link } from 'react-router-dom';
 import {
   AnswerType,
   ListQuestionCheckedType,
   ListQuestionSubmittedType,
-  SubmitResponseDataType,
 } from './type';
 const QuestionContent = ({ number }: { number: number }) => {
   const { data, error, isLoading } = useGetQuestionsQuery(number);
@@ -35,7 +33,6 @@ const QuestionContent = ({ number }: { number: number }) => {
     ListQuestionSubmittedType[]
   >([]);
 
-  const [allAnswers, setAllAnswers] = useState<number[]>([]);
   const [openModalResults, setOpenModalResults] = useState(false);
   const handleOpenModal = () => setOpenModalResults(true);
   const handleClose = () => setOpenModalResults(false);
@@ -75,9 +72,9 @@ const QuestionContent = ({ number }: { number: number }) => {
     return theScore;
   };
 
-  useEffect(() => {
-    setListAnswers([]);
-  }, [activeStep]);
+  // useEffect(() => {
+  //   setListAnswers([]);
+  // }, [activeStep]);
 
   const handleNext = (id: number) => {
     if (listAnswers.length === 0) {
@@ -120,13 +117,15 @@ const QuestionContent = ({ number }: { number: number }) => {
         }
       });
     }
-    console.log(
-      '🚀 ~ file: QuestionContent.tsx:113 ~ handleNext ~ listQuestionSubmitted:',
-      listQuestionSubmitted
-    );
+    setListAnswers([]);
   };
 
-  const handleBack = () => {
+  const handleBack = (id: number) => {
+    listQuestionSubmitted.forEach((item) => {
+      if (item.id === id) {
+        setListAnswers(item.answersSubmittedId);
+      }
+    });
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
@@ -200,12 +199,11 @@ const QuestionContent = ({ number }: { number: number }) => {
             {listQuestions[activeStep].answers.map((item: AnswerType) => (
               <Button
                 variant="contained"
-                color={allAnswers.includes(item.id) ? 'primary' : 'info'}
+                color={listAnswers.includes(item.id) ? 'primary' : 'info'}
                 sx={{ px: 4, py: 2 }}
                 key={nanoid()}
                 onClick={() => {
                   setListAnswers([...listAnswers, item.id]);
-                  setAllAnswers([...allAnswers, item.id]);
                 }}
               >
                 {item.content}
@@ -236,7 +234,7 @@ const QuestionContent = ({ number }: { number: number }) => {
           backButton={
             <Button
               size="small"
-              onClick={handleBack}
+              onClick={() => handleBack(listQuestions[activeStep - 1].id)}
               disabled={activeStep === 0}
             >
               {theme.direction === 'rtl' ? (
