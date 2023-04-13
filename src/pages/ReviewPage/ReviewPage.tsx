@@ -14,6 +14,18 @@ import { Header } from '../../components/Header';
 import { colors } from '../../constants';
 import { useNavigate } from 'react-router-dom';
 import { ListQuestionChecked } from './type';
+import {
+  StyledAnswerButton,
+  StyledBox,
+  StyledBoxAnswers,
+  StyledBoxContainer,
+  StyledBoxImg,
+  StyledBoxTitle,
+  StyledBoxUpper,
+  StyledImg,
+  StyledMobileStepper,
+  StyledTitle,
+} from './styles';
 
 const ReviewPage = () => {
   const { state } = useLocation();
@@ -34,82 +46,57 @@ const ReviewPage = () => {
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex' }}>
       <Header />
-      <Box
-        sx={{
-          paddingTop: '64px',
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
-        <Box
-          sx={{
-            my: 2,
-            borderRadius: 2,
-            bgcolor: colors.primary,
-            width: '100%',
-            padding: 4,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
-          <Typography variant="h4" sx={{ color: colors.white }}>
-            {listQuestionChecked[activeStep].scoreThisQuestion === 1
-              ? 'True'
-              : 'False'}
-          </Typography>
-          <Typography variant="h4" sx={{ color: colors.white }}>
-            {listQuestionChecked[activeStep].title}
-          </Typography>
-          <img
-            src={listQuestionChecked[activeStep].thumbnail_link || Images.LOGO}
-            alt=""
-            style={{
-              width: 300,
-              marginTop: 12,
-              maxHeight: 300,
-              objectFit: 'cover',
-            }}
-          />
-        </Box>
+      <StyledBoxContainer>
+        <StyledBoxUpper>
+          <StyledBoxTitle>
+            <Typography variant="h4" sx={{ color: colors.white }}>
+              Result:{' '}
+              {listQuestionChecked[activeStep].scoreThisQuestion === 1
+                ? 'True'
+                : 'False'}
+            </Typography>
+            <Typography
+              variant="h3"
+              display={{ xs: 'none', sm: 'block' }}
+              fontWeight={'700'}
+            >
+              Question:
+            </Typography>
+            <StyledTitle variant="h4">
+              {listQuestionChecked[activeStep].title}
+            </StyledTitle>
+          </StyledBoxTitle>
+          <StyledBoxImg>
+            <StyledImg
+              src={
+                listQuestionChecked[activeStep].thumbnail_link || Images.LOGO
+              }
+              alt=""
+            />
+          </StyledBoxImg>
+        </StyledBoxUpper>
 
-        <Box
-          sx={{
-            px: 6,
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignContent: 'center',
-            gap: 2,
-          }}
-        >
-          <Stack
-            justifyContent={{ xs: 'center', sm: 'space-between' }}
-            alignItems={{ xs: 'center', sm: 'center' }}
-            direction={{ xs: 'column', sm: 'row' }}
-            spacing={{ xs: 1, sm: 2, md: 4 }}
-          >
+        <StyledBox marginTop={'20px'}>
+          <Typography variant="h4">Answers: </Typography>
+          <StyledBoxAnswers>
             {listQuestionChecked[activeStep].answers.map((item) => (
-              <Button
+              <StyledAnswerButton
                 variant="contained"
                 color={item.is_correct ? 'success' : 'info'}
-                sx={{ px: 4, py: 2 }}
                 key={nanoid()}
               >
                 {item.content}
-              </Button>
+              </StyledAnswerButton>
             ))}
-          </Stack>
-          <Stack
-            justifyContent={{ xs: 'center', sm: 'space-between' }}
-            alignItems={{ xs: 'center', sm: 'center' }}
-            direction={{ xs: 'column', sm: 'row' }}
-            spacing={{ xs: 1, sm: 2, md: 4 }}
-          >
+          </StyledBoxAnswers>
+        </StyledBox>
+
+        <StyledBox marginTop={{ md: '80px' }}>
+          <Typography variant="h4">Your Choice: </Typography>
+
+          <StyledBoxAnswers>
             {listQuestionChecked[activeStep].answers.map((item) => (
-              <Button
+              <StyledAnswerButton
                 variant="contained"
                 color={
                   item.is_submit_correct === true ||
@@ -117,21 +104,19 @@ const ReviewPage = () => {
                     ? 'primary'
                     : 'info'
                 }
-                sx={{ px: 4, py: 2 }}
                 key={nanoid()}
               >
                 {item.content}
-              </Button>
+              </StyledAnswerButton>
             ))}
-          </Stack>
-        </Box>
+          </StyledBoxAnswers>
+        </StyledBox>
 
-        <MobileStepper
+        <StyledMobileStepper
           variant="text"
           steps={maxSteps}
           position="static"
           activeStep={activeStep}
-          sx={{ px: 20, marginTop: 'auto', mb: 2 }}
           nextButton={
             activeStep !== maxSteps - 1 ? (
               <Button size="small" onClick={handleNext}>
@@ -168,7 +153,7 @@ const ReviewPage = () => {
             </Button>
           }
         />
-      </Box>
+      </StyledBoxContainer>
     </Box>
   );
 };

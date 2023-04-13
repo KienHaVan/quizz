@@ -1,5 +1,9 @@
 import React from 'react';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from 'react-router-dom';
 import { AdminPage } from '../pages/AdminPage';
 import { ErrorPage } from '../pages/ErrorPage';
 import { ManagementPage } from '../pages/ManagamentPage';
@@ -12,6 +16,10 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/',
+        element: <Navigate to="/admin" />,
+      },
+      {
+        path: '/admin',
         element: <AdminPage />,
       },
       {

@@ -15,7 +15,15 @@ import {
 import EditQuestionModal from './EditQuestionModal';
 import { AllQuestionType, QuestionRowType } from './type';
 
-const QuestionTable = ({ questionSearch }: { questionSearch: string }) => {
+const QuestionTable = ({
+  questionSearch,
+  questionOrder,
+  questionSort,
+}: {
+  questionSearch: string;
+  questionOrder: string;
+  questionSort: string;
+}) => {
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 5,
@@ -29,6 +37,8 @@ const QuestionTable = ({ questionSearch }: { questionSearch: string }) => {
     page: paginationModel.page + 1,
     size: paginationModel.pageSize,
     keyWord: questionSearch,
+    order: questionOrder || 'ASC',
+    questionOrder: questionSort,
   });
   const [rowCount, setRowCount] = useState(allQuestions?.data?.total || 0);
 
@@ -84,8 +94,8 @@ const QuestionTable = ({ questionSearch }: { questionSearch: string }) => {
   const columns: GridColDef[] = [
     {
       field: 'number',
-      headerName: 'Sequence',
-      width: 100,
+      headerName: '#',
+      width: 50,
     },
     {
       field: 'title',
@@ -158,9 +168,11 @@ const QuestionTable = ({ questionSearch }: { questionSearch: string }) => {
       ),
     },
   ];
+
   if (!!error) {
     return <div>Error...</div>;
   }
+
   return (
     <>
       <div style={{ width: '100%', marginTop: '20px' }}>

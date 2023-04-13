@@ -10,6 +10,12 @@ import { CustomText } from '../../components/CustomText';
 import { Header } from '../../components/Header';
 import { QuestionContent } from '../../components/QuestionContent';
 import { colors } from '../../constants';
+import {
+  StyledBoxContainer,
+  StyledBoxModal,
+  StyledButton,
+  StyledTextField,
+} from './styles';
 
 interface formData {
   number: number;
@@ -47,55 +53,36 @@ const PlayPage = () => {
     setIsModalOpen(false);
   };
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex' }}>
+    <StyledBoxContainer>
       <Header />
       <Modal
         open={isModalOpen}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box
-          sx={{
-            position: 'absolute' as 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 400,
-            bgcolor: 'background.paper',
-            boxShadow: 24,
-            p: 4,
-          }}
-        >
+        <StyledBoxModal>
           <CustomText variant="h6" extraStyles={{ marginTop: 2, mb: 4 }}>
             Choose the number of questions?
           </CustomText>
-          <TextField
+          <StyledTextField
             label="The number of questions"
             type="number"
             fullWidth
             {...register('number')}
             error={!!errors.number}
             helperText={errors.number?.message?.toString()}
-            sx={{ marginY: 2 }}
           />
-          <Button
+          <StyledButton
             variant="contained"
-            sx={{
-              textTransform: 'none',
-              color: colors.white,
-              width: '100%',
-              borderRadius: 8,
-              marginTop: 4,
-            }}
             disabled={isLoading}
             onClick={handleSubmit(onSubmit)}
           >
             Start
-          </Button>
-        </Box>
+          </StyledButton>
+        </StyledBoxModal>
       </Modal>
       {numberQuestion && <QuestionContent number={numberQuestion} />}
-    </Box>
+    </StyledBoxContainer>
   );
 };
 

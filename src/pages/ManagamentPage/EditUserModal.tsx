@@ -20,6 +20,12 @@ import {
   useUpdateUserMutation,
 } from '../../store/apis/UserManagementAPI/userManagementApi';
 import { userEditFormData } from './type';
+import {
+  StyledBoxContainer,
+  StyledBoxRole,
+  StyledFormGroup,
+  StyledSubmitButton,
+} from './styles/AddUserModalStyles';
 
 const schema = yup
   .object({
@@ -55,8 +61,8 @@ const EditUserModal = ({
   };
 
   const [defaultValues, setDefaultValues] = useState({
-    name: '',
-    email: '',
+    name: ' ',
+    email: ' ',
   });
 
   const [updateUser, { isLoading: updateUserLoading }] =
@@ -125,20 +131,7 @@ const EditUserModal = ({
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <Box
-        sx={{
-          position: 'absolute' as 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: '90%',
-          bgcolor: 'background.paper',
-          boxShadow: 24,
-          p: 4,
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
+      <StyledBoxContainer>
         <TextField
           label="Name"
           type="string"
@@ -159,24 +152,9 @@ const EditUserModal = ({
           sx={{ mb: 2 }}
           autoFocus
         />
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 2,
-          }}
-        >
-          <FormLabel
-            sx={{
-              color: colors.black,
-            }}
-          >
-            Roles
-          </FormLabel>
-          <FormGroup
-            sx={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}
-          >
+        <StyledBoxRole>
+          <FormLabel>Roles</FormLabel>
+          <StyledFormGroup>
             <FormControlLabel
               control={
                 <Checkbox
@@ -197,27 +175,19 @@ const EditUserModal = ({
               }
               label="Admin"
             />
-          </FormGroup>
-        </Box>
-        <Button
+          </StyledFormGroup>
+        </StyledBoxRole>
+        <StyledSubmitButton
           variant="contained"
-          sx={{
-            textTransform: 'none',
-            color: colors.white,
-            borderRadius: 8,
-            marginTop: 4,
-            width: '400px',
-            alignSelf: 'center',
-          }}
           onClick={handleSubmit(onEditUser)}
         >
           {updateUserLoading ? (
-            <CircularProgress color="error" size={30} />
+            <CircularProgress color="info" size={30} />
           ) : (
             'Edit the user'
           )}
-        </Button>
-      </Box>
+        </StyledSubmitButton>
+      </StyledBoxContainer>
     </Modal>
   );
 };

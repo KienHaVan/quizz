@@ -9,31 +9,50 @@ import AddQuestionModal from './AddQuestionModal';
 import AddUserModal from './AddUserModal';
 import QuestionTable from './QuestionTable';
 import UserTable from './UserTable';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import {
+  StyledAddButton,
+  StyledAddButtonMobile,
+  StyledBoxContainer,
+  StyledFormControl,
+  StyledSearchInputBox,
+} from './styles/ManagementPageStyles';
 
 const ManagementPage = () => {
   const [isModalAddQuestionOpen, setIsModalAddQuestionOpen] = useState(false);
   const [isModalAddUserOpen, setIsModalAddUserOpen] = useState(false);
   const [questionSearch, setQuestionSearch] = useState('');
   const [userSearch, setUserSearch] = useState('');
+  const [questionOrder, setQuestionOrder] = useState('');
+  const [questionSort, setQuestionSort] = useState('');
+  const [userOrder, setUserOrder] = useState('');
+  const [userSort, setUserSort] = useState('');
+
+  const handleChooseQuestionOrder = (event: SelectChangeEvent) => {
+    setQuestionOrder(event.target.value as string);
+  };
+  const handleChooseQuestionSort = (event: SelectChangeEvent) => {
+    setQuestionSort(event.target.value as string);
+  };
+
+  const handleChooseUserOrder = (event: SelectChangeEvent) => {
+    setUserOrder(event.target.value as string);
+  };
+  const handleChooseUserSort = (event: SelectChangeEvent) => {
+    setUserSort(event.target.value as string);
+  };
 
   return (
-    <Box sx={{ minHeight: '100vh', paddingTop: '64px' }}>
+    <StyledBoxContainer>
       <Header />
       {/* AddQuestionButton */}
-      <Typography variant="h4" sx={{ mt: 2 }}>
+      <Typography variant="h4" marginTop={2}>
         Questions Management
       </Typography>
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          gap: 2,
-          marginTop: 2,
-          mb: 2,
-        }}
-      >
+      <StyledSearchInputBox>
         <TextField
           label="Question Search"
           type="string"
@@ -42,41 +61,62 @@ const ManagementPage = () => {
           onChange={(e) => setQuestionSearch(e.target.value)}
           sx={{ flex: 1 }}
         />
-        <Button
+        <StyledAddButtonMobile onClick={() => setIsModalAddQuestionOpen(true)}>
+          <Typography variant="h3" color={colors.white}>
+            +
+          </Typography>
+        </StyledAddButtonMobile>
+        <StyledFormControl>
+          <InputLabel id="demo-simple-select-label">Question Order</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={questionOrder}
+            label="Question Order"
+            onChange={handleChooseQuestionOrder}
+          >
+            <MenuItem value={'ASC'}>ASC</MenuItem>
+            <MenuItem value={'DESC'}>DESC</MenuItem>
+          </Select>
+        </StyledFormControl>
+        <StyledFormControl>
+          <InputLabel id="demo-simple-select-label">Question Sort</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={questionSort}
+            label="Question Order"
+            onChange={handleChooseQuestionSort}
+          >
+            <MenuItem value={'id'}>Id</MenuItem>
+            <MenuItem value={'title'}>Title</MenuItem>
+            <MenuItem value={'createdAt'}>Created Day</MenuItem>
+            <MenuItem value={'updatedAt'}>Updated Day</MenuItem>
+          </Select>
+        </StyledFormControl>
+        <StyledAddButton
           variant="contained"
-          sx={{
-            textTransform: 'none',
-            color: colors.white,
-            borderRadius: 2,
-            height: 56,
-          }}
           onClick={() => setIsModalAddQuestionOpen(true)}
         >
           Add New Question
-        </Button>
-      </Box>
+        </StyledAddButton>
+      </StyledSearchInputBox>
       {/* PopUpAddQuestion */}
       <AddQuestionModal
         isModalAddQuestionOpen={isModalAddQuestionOpen}
         setIsModalAddQuestionOpen={setIsModalAddQuestionOpen}
       />
       {/* Table */}
-      <QuestionTable questionSearch={questionSearch} />
+      <QuestionTable
+        questionSearch={questionSearch}
+        questionOrder={questionOrder}
+        questionSort={questionSort}
+      />
 
-      <Typography variant="h4" sx={{ mt: 2 }}>
+      <Typography variant="h4" marginTop={2}>
         User Management
       </Typography>
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          gap: 2,
-          marginTop: 2,
-          mb: 2,
-        }}
-      >
+      <StyledSearchInputBox>
         <TextField
           label="User Search"
           type="string"
@@ -85,25 +125,57 @@ const ManagementPage = () => {
           onChange={(e) => setUserSearch(e.target.value)}
           sx={{ flex: 1 }}
         />
-        <Button
+        <StyledAddButtonMobile onClick={() => setIsModalAddUserOpen(true)}>
+          <Typography variant="h3" color={colors.white}>
+            +
+          </Typography>
+        </StyledAddButtonMobile>
+        <StyledFormControl>
+          <InputLabel id="demo-simple-select-label">User Order</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={userOrder}
+            label="User Order"
+            onChange={handleChooseUserOrder}
+          >
+            <MenuItem value={'ASC'}>ASC</MenuItem>
+            <MenuItem value={'DESC'}>DESC</MenuItem>
+          </Select>
+        </StyledFormControl>
+        <StyledFormControl>
+          <InputLabel id="demo-simple-select-label">User Sort</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={userSort}
+            label="User Sort"
+            onChange={handleChooseUserSort}
+          >
+            <MenuItem value={'id'}>Id</MenuItem>
+            <MenuItem value={'email'}>Email</MenuItem>
+            <MenuItem value={'name'}>Name</MenuItem>
+            <MenuItem value={'created_at'}>Created Day</MenuItem>
+            <MenuItem value={'updated_at'}>Updated Day</MenuItem>
+          </Select>
+        </StyledFormControl>
+        <StyledAddButton
           variant="contained"
-          sx={{
-            textTransform: 'none',
-            color: colors.white,
-            borderRadius: 2,
-            height: 56,
-          }}
           onClick={() => setIsModalAddUserOpen(true)}
         >
           Add New User
-        </Button>
-      </Box>
+        </StyledAddButton>
+      </StyledSearchInputBox>
       <AddUserModal
         isModalAddUserOpen={isModalAddUserOpen}
         setIsModalAddUserOpen={setIsModalAddUserOpen}
       />
-      <UserTable userSearch={userSearch} />
-    </Box>
+      <UserTable
+        userSearch={userSearch}
+        userOrder={userOrder}
+        userSort={userSort}
+      />
+    </StyledBoxContainer>
   );
 };
 export default ManagementPage;

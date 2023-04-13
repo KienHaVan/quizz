@@ -19,6 +19,7 @@ export interface userFormData {
   name: string;
   email: string;
   password: string;
+  confirmPassword: string;
 }
 export interface userEditFormData {
   name: string;

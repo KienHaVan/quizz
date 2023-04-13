@@ -4,34 +4,29 @@ import Button from '@mui/material/Button';
 import { Header } from '../../components/Header';
 import Stack from '@mui/material/Stack';
 import { colors } from '../../constants';
+import { StyledButton, StyledStackContainer } from './styles';
 
 const AdminPage = () => {
   const navigate = useNavigate();
   return (
     <>
       <Header />
-      <Stack
+      <StyledStackContainer
         spacing={2}
         direction="column"
         justifyContent="center"
         alignItems="center"
-        sx={{ minHeight: '100vh' }}
       >
-        <Button
-          variant="contained"
-          sx={{ width: '300px', color: colors.white }}
-          onClick={() => navigate('/play')}
-        >
+        <StyledButton variant="contained" onClick={() => navigate('/play')}>
           Play
-        </Button>
-        <Button
+        </StyledButton>
+        <StyledButton
           variant="contained"
-          sx={{ width: '300px', color: colors.white }}
           onClick={() => navigate('/management')}
         >
           Manage
-        </Button>
-      </Stack>
+        </StyledButton>
+      </StyledStackContainer>
     </>
   );
 };

@@ -1,5 +1,5 @@
 import { useLayoutEffect, useState } from 'react';
-import { LoadingPage } from '../pages/LoadingPage';
+import { LoadingModal } from '../components/LoadingModal';
 import { useAppDispatch, useAppSelector } from '../store';
 import {
   initCredentials,
@@ -28,7 +28,7 @@ const Router = () => {
   }, [dispatch]);
 
   if (!isLoading) {
-    return <LoadingPage />;
+    return <LoadingModal isOpen={true} />;
   }
 
   if (token && user?.roles.includes('admin')) {

@@ -5,6 +5,7 @@ import {
   FormGroup,
   FormLabel,
   Avatar,
+  Stack,
 } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -23,6 +24,16 @@ import {
 } from '../../store/apis/ManagementAPI/managementApi';
 import { formData } from './type';
 import { useUploadThumbnailMutation } from '../../store/apis/QuestionAPI/questionApi';
+import {
+  StyledAddButton,
+  StyledAvatar,
+  StyledBoxContainer,
+  StyledBoxDown,
+  StyledBoxMiddle,
+  StyledBoxUpper,
+  StyledFormGroup,
+} from './styles/AddQuestionModalStyles';
+import { FaCloudUploadAlt } from 'react-icons/fa';
 
 const schema = yup
   .object({
@@ -65,12 +76,12 @@ const EditQuestionModal = ({
   };
 
   const [defaultValues, setDefaultValues] = useState({
-    title: '',
-    thumbnailLink: '',
-    answer1: '',
-    answer2: '',
-    answer3: '',
-    answer4: '',
+    title: ' ',
+    thumbnailLink: ' ',
+    answer1: ' ',
+    answer2: ' ',
+    answer3: ' ',
+    answer4: ' ',
   });
 
   const {
@@ -210,28 +221,8 @@ const EditQuestionModal = ({
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <Box
-        sx={{
-          position: 'absolute' as 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: '90%',
-          bgcolor: 'background.paper',
-          boxShadow: 24,
-          p: 4,
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'center',
-            gap: 2,
-          }}
-        >
+      <StyledBoxContainer>
+        <StyledBoxUpper>
           <TextField
             label="Title"
             type="string"
@@ -239,52 +230,48 @@ const EditQuestionModal = ({
             {...register('title')}
             error={!!errors.title}
             helperText={errors.title?.message?.toString()}
-            sx={{ mb: 2 }}
             autoFocus
           />
-          {/* <TextField
-            {...register('thumbnailLink')}
-            name="thumbnailLink"
-            label="Thumbnail Link"
-            fullWidth
-            autoComplete="true"
-            sx={{ mb: 2 }}
-            autoFocus
-          /> */}
-          <Box display="flex" justifyContent="center">
-            <Avatar
-              alt="thumbnail"
-              sx={{
-                width: '50px',
-                height: '50px',
-              }}
-              src={thumbnailUrl}
-            />
-          </Box>
-          <Button
-            variant="contained"
-            component="label"
-            sx={{ width: '300px', height: '56px', color: colors.white }}
-          >
-            Upload image
-            <input
-              hidden
-              accept="image/*"
-              multiple
-              type="file"
-              onChange={handleUploadThumbnail}
-              ref={fileInputRef}
-            />
-          </Button>
-        </Box>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'center',
-            gap: 2,
-          }}
-        >
+          <Stack flexDirection={'row'} alignItems={'center'} gap={4}>
+            <Box display="flex" justifyContent="center">
+              <StyledAvatar
+                alt="thumbnail"
+                sx={{
+                  width: '50px',
+                  height: '50px',
+                }}
+                src={thumbnailUrl}
+              />
+            </Box>
+            <Button variant="contained" component="label">
+              <FaCloudUploadAlt size={56} color={colors.white} />
+              <input
+                hidden
+                accept="image/*"
+                multiple
+                type="file"
+                onChange={handleUploadThumbnail}
+                ref={fileInputRef}
+              />
+            </Button>
+            {/* <Button
+              variant="contained"
+              component="label"
+              sx={{ width: '300px', height: '56px', color: colors.white }}
+            >
+              Upload image
+              <input
+                hidden
+                accept="image/*"
+                multiple
+                type="file"
+                onChange={handleUploadThumbnail}
+                ref={fileInputRef}
+              />
+            </Button> */}
+          </Stack>
+        </StyledBoxUpper>
+        <StyledBoxMiddle>
           <TextField
             label="Answer 1"
             type="string"
@@ -305,15 +292,8 @@ const EditQuestionModal = ({
             sx={{ mb: 2 }}
             autoFocus
           />
-        </Box>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'center',
-            gap: 2,
-          }}
-        >
+        </StyledBoxMiddle>
+        <StyledBoxMiddle>
           <TextField
             label="Answer 3"
             type="string"
@@ -334,25 +314,10 @@ const EditQuestionModal = ({
             sx={{ mb: 2 }}
             autoFocus
           />
-        </Box>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 2,
-          }}
-        >
-          <FormLabel
-            sx={{
-              color: colors.black,
-            }}
-          >
-            Correct Answer
-          </FormLabel>
-          <FormGroup
-            sx={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}
-          >
+        </StyledBoxMiddle>
+        <StyledBoxDown>
+          <FormLabel>Correct Answer</FormLabel>
+          <StyledFormGroup>
             <FormControlLabel
               control={
                 <Checkbox
@@ -393,27 +358,19 @@ const EditQuestionModal = ({
               }
               label="answer 4"
             />
-          </FormGroup>
-        </Box>
-        <Button
+          </StyledFormGroup>
+        </StyledBoxDown>
+        <StyledAddButton
           variant="contained"
-          sx={{
-            textTransform: 'none',
-            color: colors.white,
-            borderRadius: 8,
-            marginTop: 4,
-            width: '400px',
-            alignSelf: 'center',
-          }}
           onClick={handleSubmit(onEditQuestion)}
         >
           {updateQuestionLoading || updateAnswerLoading ? (
-            <CircularProgress color="error" size={30} />
+            <CircularProgress color="info" size={30} />
           ) : (
             'Edit the question'
           )}
-        </Button>
-      </Box>
+        </StyledAddButton>
+      </StyledBoxContainer>
     </Modal>
   );
 };

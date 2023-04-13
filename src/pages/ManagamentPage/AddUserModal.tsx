@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { yupResolver } from '@hookform/resolvers/yup';
 import {
   Checkbox,
   FormControlLabel,
@@ -7,16 +7,22 @@ import {
 } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import CircularProgress from '@mui/material/CircularProgress';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
-import { colors } from '../../constants';
-import * as yup from 'yup';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { useCreateUserMutation } from '../../store/apis/UserManagementAPI/userManagementApi';
 import { toast } from 'react-toastify';
+import * as yup from 'yup';
+import { colors } from '../../constants';
+import { useCreateUserMutation } from '../../store/apis/UserManagementAPI/userManagementApi';
 import { userFormData } from './type';
+import {
+  StyledBoxContainer,
+  StyledBoxRole,
+  StyledFormGroup,
+  StyledSubmitButton,
+} from './styles/AddUserModalStyles';
+import { LoadingModal } from '../../components/LoadingModal';
 
 const schema = yup
   .object({
@@ -26,6 +32,10 @@ const schema = yup
       .string()
       .required('Password is required')
       .min(6, 'Password must be at least 6 characters'),
+    confirmPassword: yup
+      .string()
+      .required('Please confirm your password')
+      .oneOf([yup.ref('password')], 'Password does not match'),
   })
   .required();
 
@@ -79,6 +89,7 @@ const AddUserModal = ({
         name: '',
         email: '',
         password: '',
+        confirmPassword: '',
       });
       setRoleChosen({
         user: true,
@@ -92,109 +103,85 @@ const AddUserModal = ({
   };
 
   return (
-    <Modal
-      open={isModalAddUserOpen}
-      onClose={() => setIsModalAddUserOpen(false)}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-    >
-      <Box
-        sx={{
-          position: 'absolute' as 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: '90%',
-          bgcolor: 'background.paper',
-          boxShadow: 24,
-          p: 4,
-          display: 'flex',
-          flexDirection: 'column',
-        }}
+    <>
+      <Modal
+        open={isModalAddUserOpen}
+        onClose={() => setIsModalAddUserOpen(false)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
       >
-        <TextField
-          label="Name"
-          type="string"
-          fullWidth
-          {...register('name')}
-          error={!!errors.name}
-          helperText={errors.name?.message?.toString()}
-          sx={{ mb: 2 }}
-        />
-        <TextField
-          label="Email"
-          type="email"
-          fullWidth
-          {...register('email')}
-          error={!!errors.email}
-          helperText={errors.email?.message?.toString()}
-          sx={{ mb: 2 }}
-        />
-        <TextField
-          label="Password"
-          type="password"
-          fullWidth
-          {...register('password')}
-          error={!!errors.password}
-          helperText={errors.password?.message?.toString()}
-          sx={{ mb: 2 }}
-        />
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 2,
-          }}
-        >
-          <FormLabel
-            sx={{
-              color: colors.black,
-            }}
+        <StyledBoxContainer>
+          <TextField
+            label="Name"
+            type="string"
+            fullWidth
+            {...register('name')}
+            error={!!errors.name}
+            helperText={errors.name?.message?.toString()}
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            label="Email"
+            type="email"
+            fullWidth
+            {...register('email')}
+            error={!!errors.email}
+            helperText={errors.email?.message?.toString()}
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            label="Password"
+            type="password"
+            fullWidth
+            {...register('password')}
+            error={!!errors.password}
+            helperText={errors.password?.message?.toString()}
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            label="Confirm Password"
+            type="password"
+            fullWidth
+            {...register('confirmPassword')}
+            error={!!errors.confirmPassword}
+            helperText={errors.confirmPassword?.message?.toString()}
+            sx={{ mb: 2 }}
+          />
+          <StyledBoxRole>
+            <FormLabel>Roles</FormLabel>
+            <StyledFormGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    name="user"
+                    checked={roleChosen.user}
+                    onChange={handleRoleChosen}
+                  />
+                }
+                label="User"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    name="admin"
+                    checked={roleChosen.admin}
+                    onChange={handleRoleChosen}
+                  />
+                }
+                label="Admin"
+              />
+            </StyledFormGroup>
+          </StyledBoxRole>
+          <StyledSubmitButton
+            variant="contained"
+            onClick={handleSubmit(onAddNewUser)}
           >
-            Roles
-          </FormLabel>
-          <FormGroup
-            sx={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}
-          >
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name="user"
-                  checked={roleChosen.user}
-                  onChange={handleRoleChosen}
-                />
-              }
-              label="User"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name="admin"
-                  checked={roleChosen.admin}
-                  onChange={handleRoleChosen}
-                />
-              }
-              label="Admin"
-            />
-          </FormGroup>
-        </Box>
-        <Button
-          variant="contained"
-          sx={{
-            textTransform: 'none',
-            color: colors.white,
-            borderRadius: 8,
-            marginTop: 4,
-            width: '400px',
-            alignSelf: 'center',
-          }}
-          onClick={handleSubmit(onAddNewUser)}
-        >
-          Add new user
-        </Button>
-      </Box>
-    </Modal>
+            Add new user
+          </StyledSubmitButton>
+        </StyledBoxContainer>
+      </Modal>
+      <LoadingModal isOpen={AddUserLoading} />
+    </>
   );
 };
 

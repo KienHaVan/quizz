@@ -1,18 +1,22 @@
-import React from 'react';
-import Box from '@mui/material/Box';
-import { colors } from '../../constants';
-import TextField from '@mui/material/TextField';
-import * as yup from 'yup';
-import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
-import { CustomText } from '../../components/CustomText';
-import { useResetPasswordMutation } from '../../store/apis/AuthAPI/authApi';
-import { useAppDispatch } from '../../store';
-import { toast } from 'react-toastify';
-import { ErrorResponseType } from '../../store/apis/AuthAPI/types';
+import TextField from '@mui/material/TextField';
+import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import * as yup from 'yup';
+import { CustomText } from '../../components/CustomText';
+import { colors } from '../../constants';
+import { useResetPasswordMutation } from '../../store/apis/AuthAPI/authApi';
+import { ErrorResponseType } from '../../store/apis/AuthAPI/types';
+import {
+  StyledBox,
+  StyledBoxContainer,
+  StyledButton,
+  StyledTextField,
+} from './styles';
 
 interface FormType {
   email: string;
@@ -55,54 +59,25 @@ const ForgotPasswordPage = () => {
     }
   };
   return (
-    <Box
-      sx={{
-        height: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-    >
-      <Box
-        sx={{
-          borderRadius: 4,
-          width: '50%',
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
-        <CustomText variant="h3" extraStyles={{ marginTop: 2, mb: 4 }}>
+    <StyledBoxContainer>
+      <StyledBox>
+        <CustomText variant="h4" extraStyles={{ marginTop: 2, mb: 4 }}>
           Reset your password!
         </CustomText>
-        <TextField
+        <StyledTextField
           variant="standard"
           label="Email"
           type="email"
           fullWidth
-          sx={{ marginY: 2 }}
           {...register('email')}
           error={!!errors.email}
           helperText={errors.email?.message?.toString()}
         />
-        <Button
-          variant="contained"
-          sx={{
-            textTransform: 'none',
-            color: colors.white,
-            width: '100%',
-            borderRadius: 8,
-            marginTop: 4,
-          }}
-          onClick={handleSubmit(onSubmit)}
-        >
-          {isLoading ? <CircularProgress color="error" size={30} /> : 'Submit'}
-        </Button>
-      </Box>
-    </Box>
+        <StyledButton variant="contained" onClick={handleSubmit(onSubmit)}>
+          {isLoading ? <CircularProgress color="info" size={30} /> : 'Submit'}
+        </StyledButton>
+      </StyledBox>
+    </StyledBoxContainer>
   );
 };
 

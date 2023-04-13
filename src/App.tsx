@@ -9,7 +9,7 @@ function App() {
   return (
     <Provider store={store}>
       <ThemeProvider theme={theme}>
-        <Container sx={{ width: 1200 }}>
+        <Container maxWidth="lg">
           <Router />
         </Container>
       </ThemeProvider>

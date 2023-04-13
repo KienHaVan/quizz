@@ -13,9 +13,14 @@ import Toolbar from '@mui/material/Toolbar';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Images } from '../../assets';
-import { useAppDispatch } from '../../store';
+import { useAppDispatch, useAppSelector } from '../../store';
 import { ErrorResponseType } from '../../store/apis/AuthAPI/types';
 import { logOut } from '../../store/slices/authSlice';
+import Avatar from '@mui/material/Avatar';
+import { Typography } from '@mui/material';
+import { selectCurrentUser } from '../../store/slices/authSlice';
+import { UserType } from '../../types';
+import { StyledListItemButton } from './styles';
 
 const Header = () => {
   const drawerWidth = 240;
@@ -24,6 +29,8 @@ const Header = () => {
   const [isListOpen, setIsListOpen] = useState(false);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const user = useAppSelector(selectCurrentUser);
+  const { name, avatarLink } = user as UserType;
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
@@ -46,13 +53,24 @@ const Header = () => {
       </Box>
       <Divider />
       <List>
-        {navItems.map((item) => (
+        {/* {navItems.map((item) => (
           <ListItem key={item} disablePadding>
             <ListItemButton sx={{ textAlign: 'center' }}>
               <ListItemText primary={item} />
             </ListItemButton>
           </ListItem>
-        ))}
+        ))} */}
+        <StyledListItemButton onClick={handleLogOut}>
+          <ListItemText
+            primary="LogOut"
+            sx={{
+              alignSelf: 'center',
+              textAlign: 'center',
+              color: 'red',
+              fontWeight: '600',
+            }}
+          />
+        </StyledListItemButton>
       </List>
     </Box>
   );
@@ -80,16 +98,26 @@ const Header = () => {
           >
             <img src={Images.LOGO} alt="" style={{ width: 100 }} />
           </Box>
-          <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-            {navItems.map((item) => (
-              <Button
-                key={item}
-                sx={{ color: '#fff' }}
-                onClick={() => setIsListOpen(!isListOpen)}
+          <Box
+            sx={{
+              display: { xs: 'none', sm: 'block' },
+            }}
+          >
+            <Button
+              sx={{ color: '#fff' }}
+              onClick={() => setIsListOpen(!isListOpen)}
+            >
+              <Typography
+                sx={{
+                  textTransform: 'none',
+                  marginRight: '8px',
+                  fontSize: '20px',
+                }}
               >
-                {item}
-              </Button>
-            ))}
+                {name}
+              </Typography>
+              <Avatar alt={name} src={avatarLink} />
+            </Button>
             {isListOpen && (
               <List
                 sx={{
@@ -103,10 +131,6 @@ const Header = () => {
                 component="nav"
                 aria-label="mailbox folders"
               >
-                {/* <ListItemButton>
-                  <ListItemText primary="Settings" />
-                </ListItemButton> */}
-                {/* <Divider /> */}
                 <ListItemButton onClick={handleLogOut}>
                   <ListItemText primary="LogOut" />
                 </ListItemButton>

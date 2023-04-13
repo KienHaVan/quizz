@@ -15,7 +15,15 @@ import {
 import EditUserModal from './EditUserModal';
 import { AllUserResultType, ResponseUsersDataGridRowType } from './type';
 
-const UserTable = ({ userSearch }: { userSearch: string }) => {
+const UserTable = ({
+  userSearch,
+  userOrder,
+  userSort,
+}: {
+  userSearch: string;
+  userOrder: string;
+  userSort: string;
+}) => {
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 5,
@@ -43,8 +51,8 @@ const UserTable = ({ userSearch }: { userSearch: string }) => {
   const columns: GridColDef[] = [
     {
       field: 'number',
-      headerName: 'Sequence',
-      width: 100,
+      headerName: '#',
+      width: 50,
     },
     {
       field: 'name',
@@ -138,6 +146,8 @@ const UserTable = ({ userSearch }: { userSearch: string }) => {
     page: paginationModel.page + 1,
     size: paginationModel.pageSize,
     keyWord: userSearch,
+    sortField: userSort || 'id',
+    order: userOrder || 'ASC',
   });
   const [rowCount, setRowCount] = useState(allUsers?.data?.total || 0);
   useEffect(() => {

@@ -1,20 +1,27 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
-import Grid from '@mui/material/Grid';
-import TextField from '@mui/material/TextField';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import * as yup from 'yup';
 import { Images } from '../../assets';
-import { CustomText } from '../../components/CustomText';
-import { colors } from '../../constants';
 import { useAppDispatch } from '../../store';
 import { useLoginMutation } from '../../store/apis/AuthAPI/authApi';
 import { ErrorResponseType } from '../../store/apis/AuthAPI/types';
 import { setCredentials } from '../../store/slices/authSlice';
+import {
+  BoxUpper,
+  CustomTextField,
+  GridContainer,
+  GridUpper,
+  HeaderText,
+  StyledForgetPasswordButton,
+  StyledGridDown,
+  StyledImage,
+  StyledLoginButton,
+  StyledLogoImage,
+  StyledRegisterButton,
+} from './styles';
 import { FormType } from './type';
 
 const schema = yup
@@ -36,6 +43,7 @@ const schema = yup
   .required();
 
 const LoginPage = () => {
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -64,116 +72,59 @@ const LoginPage = () => {
     }
   };
   return (
-    <Grid container height="100vh" p={4} spacing={2}>
-      <Grid
-        item
-        xs={12}
-        md={6}
-        p={4}
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-        }}
-      >
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            flexDirection: 'column',
-            alignItems: 'center',
-            marginBottom: 4,
-          }}
-        >
-          <img src={Images.LOGO} alt="Logo" />
-          <CustomText variant="h5" extraStyles={{ marginTop: 2 }}>
-            Welcome back!
-          </CustomText>
-          <CustomText variant="h5">Please login to your account!</CustomText>
-        </Box>
-        <TextField
+    <GridContainer
+      container
+      minHeight="100vh"
+      p={{ lg: 4, sm: 2 }}
+      spacing={{ lg: 2, sm: 0 }}
+    >
+      <GridUpper item xs={12} md={6} p={{ lg: 4, sm: 0 }}>
+        <BoxUpper>
+          <StyledLogoImage src={Images.LOGO} alt="Logo" />
+          <HeaderText variant="h5">Welcome back!</HeaderText>
+          <HeaderText variant="h5">Please login to your account!</HeaderText>
+        </BoxUpper>
+        <CustomTextField
           variant="standard"
           label="Email"
           type="email"
           fullWidth
-          sx={{ marginY: 2 }}
           {...register('email')}
           error={!!errors.email}
           helperText={errors.email?.message?.toString()}
         />
-        <TextField
+        <CustomTextField
           label="Password"
           type="password"
           variant="standard"
           fullWidth
-          sx={{ marginBottom: 1 }}
           {...register('password')}
           error={!!errors.password}
           helperText={errors.password?.message?.toString()}
         />
-        <Link
-          to="/forgot-password"
-          style={{
-            width: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            textDecoration: 'none',
-          }}
+        <StyledForgetPasswordButton
+          variant="text"
+          onClick={() => navigate('/forgot-password')}
         >
-          <Button
-            variant="text"
-            sx={{
-              textTransform: 'none',
-              color: colors.gray,
-              alignSelf: 'flex-end',
-              ':hover': {
-                bgcolor: 'transparent',
-              },
-            }}
-          >
-            Forgot Password?
-          </Button>
-        </Link>
-        <Button
-          variant="contained"
-          sx={{
-            textTransform: 'none',
-            color: colors.white,
-            width: '100%',
-            borderRadius: 8,
-            marginTop: 4,
-          }}
-          onClick={handleSubmit(onSubmit)}
+          Forgot Password?
+        </StyledForgetPasswordButton>
+
+        <StyledLoginButton variant="contained" onClick={handleSubmit(onSubmit)}>
+          {isLoading ? <CircularProgress color="info" size={30} /> : 'Login'}
+        </StyledLoginButton>
+
+        <StyledRegisterButton
+          variant="text"
+          onClick={() => navigate('/register')}
         >
-          {isLoading ? <CircularProgress color="error" size={30} /> : 'Login'}
-        </Button>
-        <Link
-          to="/register"
-          style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
-        >
-          <CustomText
-            variant="subtitle1"
-            extraStyles={{ marginTop: 4, alignSelf: 'center' }}
-          >
-            Don't have an account? Sign Up
-          </CustomText>
-        </Link>
-      </Grid>
-      <Grid
-        item
-        xs={false}
-        md={6}
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          bgcolor: colors.primary,
-          borderRadius: 4,
-        }}
-      >
-        <img src={Images.LOGIN} alt="" style={{ width: 400 }} />
-      </Grid>
-    </Grid>
+          Don't have an account? Sign Up
+        </StyledRegisterButton>
+      </GridUpper>
+
+      <StyledGridDown item xs={false} sm={12} md={6}>
+        <StyledImage src={Images.LOGIN} alt="" />
+      </StyledGridDown>
+    </GridContainer>
   );
 };
 

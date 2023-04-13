@@ -6,8 +6,8 @@ import {
   fetchBaseQuery,
 } from '@reduxjs/toolkit/query/react';
 import { Mutex } from 'async-mutex';
-import { RootState } from '..';
-import { logOut, setNewAccessToken } from '../slices/authSlice';
+import { RootState, store } from '..';
+import { logOut, setCredentials, setNewAccessToken } from '../slices/authSlice';
 import { RefreshTokenResponse } from './AuthAPI/types';
 
 const BASE_URL = process.env.REACT_APP_BASE_URL || '';
@@ -30,6 +30,7 @@ const baseQueryWithReauth: BaseQueryFn<
   unknown,
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
+  const auth = store.getState().auth;
   await mutex.waitForUnlock();
   let result = await baseQuery(args, api, extraOptions);
   if (result.error && result.error.status === 401) {
@@ -47,7 +48,13 @@ const baseQueryWithReauth: BaseQueryFn<
 
         if (newAccessToken) {
           // store the new token
-          api.dispatch(setNewAccessToken(newAccessToken));
+          api.dispatch(
+            setCredentials({
+              ...auth,
+              accessToken: refreshResult?.data?.newTokens?.access_token,
+              refreshToken: refreshResult?.data?.newTokens?.refresh_token,
+            })
+          );
           // retry the initial query
           result = await baseQuery(args, api, extraOptions);
         } else {

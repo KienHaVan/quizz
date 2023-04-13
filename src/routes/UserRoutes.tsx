@@ -1,4 +1,8 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from 'react-router-dom';
 import { ErrorPage } from '../pages/ErrorPage';
 import { PlayPage } from '../pages/PlayPage';
 import { ReviewPage } from '../pages/ReviewPage';
@@ -9,6 +13,10 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/',
+        element: <Navigate to="/play" />,
+      },
+      {
+        path: '/play',
         element: <PlayPage />,
       },
       {

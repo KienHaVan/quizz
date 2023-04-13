@@ -24,8 +24,8 @@ const authSlice = createSlice({
       return action.payload;
     },
     setNewAccessToken: (state, action: PayloadAction<string>) => {
-      encryptData('auth', state);
       state.accessToken = action.payload;
+      encryptData('auth', state);
     },
     logOut: (state) => {
       state.user = null;
