@@ -6,6 +6,7 @@ import {
 import { ErrorPage } from '../pages/ErrorPage';
 import { PlayPage } from '../pages/PlayPage';
 import { ReviewPage } from '../pages/ReviewPage';
+import { ProfilePage } from '../pages/ProfilePage';
 
 const router = createBrowserRouter([
   {
@@ -22,6 +23,10 @@ const router = createBrowserRouter([
       {
         path: '/review',
         element: <ReviewPage />,
+      },
+      {
+        path: '/profile',
+        element: <ProfilePage />,
       },
     ],
   },

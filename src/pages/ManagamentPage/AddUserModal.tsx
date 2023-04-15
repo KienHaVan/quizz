@@ -1,28 +1,20 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import {
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
-  FormLabel,
-} from '@mui/material';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
+import { Checkbox, FormControlLabel, FormLabel } from '@mui/material';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import * as yup from 'yup';
-import { colors } from '../../constants';
+import { LoadingModal } from '../../components/LoadingModal';
 import { useCreateUserMutation } from '../../store/apis/UserManagementAPI/userManagementApi';
-import { userFormData } from './type';
 import {
   StyledBoxContainer,
   StyledBoxRole,
   StyledFormGroup,
   StyledSubmitButton,
 } from './styles/AddUserModalStyles';
-import { LoadingModal } from '../../components/LoadingModal';
+import { userFormData } from './type';
 
 const schema = yup
   .object({
@@ -85,28 +77,31 @@ const AddUserModal = ({
     try {
       await addUser({ ...data, roles }).unwrap();
       toast('Add new user successfully!');
-      reset({
-        name: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-      });
-      setRoleChosen({
-        user: true,
-        admin: false,
-      });
-      setIsModalAddUserOpen(false);
+      handleCloseModalAddUser();
     } catch (error) {
       toast.error('Failed to add User');
       console.log(error);
     }
+  };
+  const handleCloseModalAddUser = () => {
+    reset({
+      name: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    });
+    setRoleChosen({
+      user: true,
+      admin: false,
+    });
+    setIsModalAddUserOpen(false);
   };
 
   return (
     <>
       <Modal
         open={isModalAddUserOpen}
-        onClose={() => setIsModalAddUserOpen(false)}
+        onClose={handleCloseModalAddUser}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >

@@ -1,36 +1,33 @@
 import MenuIcon from '@mui/icons-material/Menu';
+import { Typography } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
+import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Toolbar from '@mui/material/Toolbar';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
+import Swal from 'sweetalert2';
 import { Images } from '../../assets';
-import { useAppDispatch, useAppSelector } from '../../store';
+import { useAppDispatch } from '../../store';
 import { ErrorResponseType } from '../../store/apis/AuthAPI/types';
+import { useGetOwnProfileQuery } from '../../store/apis/UserManagementAPI/userManagementApi';
 import { logOut } from '../../store/slices/authSlice';
-import Avatar from '@mui/material/Avatar';
-import { Typography } from '@mui/material';
-import { selectCurrentUser } from '../../store/slices/authSlice';
-import { UserType } from '../../types';
 import { StyledListItemButton } from './styles';
 
 const Header = () => {
-  const drawerWidth = 240;
-  const navItems = ['User'];
+  const drawerWidth = '60%';
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [isListOpen, setIsListOpen] = useState(false);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const user = useAppSelector(selectCurrentUser);
-  const { name, avatarLink } = user as UserType;
+  const { data } = useGetOwnProfileQuery({});
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
@@ -38,8 +35,16 @@ const Header = () => {
 
   const handleLogOut = async () => {
     try {
-      dispatch(logOut());
-      navigate('/');
+      Swal.fire({
+        title: 'Do you want to log out?',
+        showCancelButton: true,
+        confirmButtonText: 'LogOut',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          dispatch(logOut());
+          navigate('/');
+        }
+      });
     } catch (error) {
       const err = error as ErrorResponseType;
       console.error(err.data.message);
@@ -53,13 +58,16 @@ const Header = () => {
       </Box>
       <Divider />
       <List>
-        {/* {navItems.map((item) => (
-          <ListItem key={item} disablePadding>
-            <ListItemButton sx={{ textAlign: 'center' }}>
-              <ListItemText primary={item} />
-            </ListItemButton>
-          </ListItem>
-        ))} */}
+        <StyledListItemButton onClick={() => navigate('/profile')}>
+          <ListItemText
+            primary="Profile"
+            sx={{
+              alignSelf: 'center',
+              textAlign: 'center',
+              fontWeight: '600',
+            }}
+          />
+        </StyledListItemButton>
         <StyledListItemButton onClick={handleLogOut}>
           <ListItemText
             primary="LogOut"
@@ -114,9 +122,9 @@ const Header = () => {
                   fontSize: '20px',
                 }}
               >
-                {name}
+                {data?.name}
               </Typography>
-              <Avatar alt={name} src={avatarLink} />
+              <Avatar alt={data?.name} src={data?.avatar_link} />
             </Button>
             {isListOpen && (
               <List
@@ -131,6 +139,10 @@ const Header = () => {
                 component="nav"
                 aria-label="mailbox folders"
               >
+                <ListItemButton onClick={() => navigate('/profile')}>
+                  <ListItemText primary="Profile" />
+                </ListItemButton>
+                <Divider />
                 <ListItemButton onClick={handleLogOut}>
                   <ListItemText primary="LogOut" />
                 </ListItemButton>

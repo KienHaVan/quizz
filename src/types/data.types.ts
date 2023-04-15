@@ -3,7 +3,7 @@ export type UserType = {
   name: string;
   roles: RoleType[];
   id: number;
-  avatarLink: string;
+  avatarLink?: string;
 };
 
 export type RoleType = 'admin' | 'user';

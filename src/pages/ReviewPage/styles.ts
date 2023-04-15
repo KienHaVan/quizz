@@ -1,11 +1,18 @@
 import { Box, Button, MobileStepper, Typography, styled } from '@mui/material';
 import { colors } from '../../constants';
 
+export const StledBoxWrapper = styled(Box)(({ theme }) => ({
+  minHeight: '100vh',
+  display: 'flex',
+  position: 'relative',
+}));
+
 export const StyledBoxContainer = styled(Box)(({ theme }) => ({
   paddingTop: '64px',
   flex: 1,
   display: 'flex',
   flexDirection: 'column',
+  position: 'relative',
   [theme.breakpoints.down('md')]: {
     flexDirection: 'column',
     justifyContent: 'center',
@@ -87,7 +94,8 @@ export const StyledBoxAnswers = styled(Box)(({ theme }) => ({
   gap: '20px',
   flex: 1,
   position: 'absolute',
-  left: '350px',
+  left: '250px',
+  overflow: 'hidden',
   [theme.breakpoints.down('md')]: {
     display: 'grid',
     gridTemplateColumns: '300px 300px',
@@ -107,8 +115,14 @@ export const StyledAnswerButton = styled(Button)(({ theme }) => ({
   display: 'block',
   padding: '32px 16px',
   minWidth: '200px',
+  maxWidth: '240px',
+  [theme.breakpoints.down('md')]: {
+    // width: '100%',
+    maxWidth: '360px',
+  },
   [theme.breakpoints.down('sm')]: {
     width: '100%',
+    maxWidth: '360px',
   },
 }));
 

@@ -34,6 +34,8 @@ export const StyledBoxTitle = styled(Box)(({ theme }) => ({
   gap: '4px',
   width: '50%',
   shrink: 0,
+  maxHeight: '400px',
+  overflow: 'hidden',
   [theme.breakpoints.down('sm')]: {
     width: '100%',
   },
@@ -72,6 +74,7 @@ export const StyledBoxAnswers = styled(Box)(({ theme }) => ({
   display: 'flex',
   justifyContent: 'space-evenly',
   alignContent: 'center',
+  overflow: 'hidden',
   [theme.breakpoints.down('md')]: {
     display: 'grid',
     gridTemplateColumns: '300px 300px',
@@ -87,6 +90,7 @@ export const StyledAnswerButton = styled(Button)(({ theme }) => ({
   display: 'block',
   padding: '32px 16px',
   minWidth: '200px',
+  maxWidth: '360px',
 }));
 
 export const StyledMobileStepper = styled(MobileStepper)(({ theme }) => ({

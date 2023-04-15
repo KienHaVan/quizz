@@ -1,6 +1,6 @@
 import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
-import { IconButton } from '@mui/material';
+import { Button, IconButton } from '@mui/material';
 import Box from '@mui/material/Box';
 import { DataGrid, GridColDef, GridRowsProp } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
@@ -14,6 +14,7 @@ import {
 } from '../../store/apis/UserManagementAPI/userManagementApi';
 import EditUserModal from './EditUserModal';
 import { AllUserResultType, ResponseUsersDataGridRowType } from './type';
+import { ImagePreview } from '../../components/ImagePreview';
 
 const UserTable = ({
   userSearch,
@@ -82,17 +83,26 @@ const UserTable = ({
       renderCell: (params) => {
         if (params.row.avatar) {
           return (
-            <img
-              src={params.row.avatar.toString()}
-              alt="thumbnail"
-              style={{
-                width: 60,
-                height: 60,
-                padding: '12px',
-                borderRadius: '50%',
-                objectFit: 'cover',
-              }}
-            />
+            <Button
+              onClick={() =>
+                setOpenImagePreview({
+                  open: true,
+                  imageUrl: params.row.avatar.toString(),
+                })
+              }
+            >
+              <img
+                src={params.row.avatar.toString()}
+                alt="thumbnail"
+                style={{
+                  width: 60,
+                  height: 60,
+                  padding: '12px',
+                  borderRadius: '50%',
+                  objectFit: 'cover',
+                }}
+              />
+            </Button>
           );
         }
         return <div>No thumbmail</div>;
@@ -177,6 +187,11 @@ const UserTable = ({
       paginationModel.pageSize,
     ]);
 
+  const [openImagePreview, setOpenImagePreview] = useState({
+    open: false,
+    imageUrl: '',
+  });
+
   if (!!error) {
     return <div>Error...</div>;
   }
@@ -199,6 +214,10 @@ const UserTable = ({
         isModalEditUserOpen={isModalEditUserOpen}
         setIsModalEditUserOpen={setIsModalEditUserOpen}
         userId={userId}
+      />
+      <ImagePreview
+        openImagePreview={openImagePreview}
+        setOpenImagePreview={setOpenImagePreview}
       />
     </>
   );

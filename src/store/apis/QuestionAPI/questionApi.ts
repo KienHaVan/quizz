@@ -4,6 +4,7 @@ export const questionApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getQuestions: builder.query({
       query: (arg) => `/questions/play?total=${arg}`,
+      keepUnusedDataFor: 0,
     }),
     submitQuestions: builder.mutation({
       query: (listQuestionSubmitted) => ({

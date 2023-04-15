@@ -1,6 +1,7 @@
 import { Typography } from '@mui/material';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
 import { useState } from 'react';
 import { Header } from '../../components/Header';
@@ -9,10 +10,6 @@ import AddQuestionModal from './AddQuestionModal';
 import AddUserModal from './AddUserModal';
 import QuestionTable from './QuestionTable';
 import UserTable from './UserTable';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
 import {
   StyledAddButton,
   StyledAddButtonMobile,

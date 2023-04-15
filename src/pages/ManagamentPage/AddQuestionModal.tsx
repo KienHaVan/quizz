@@ -1,29 +1,21 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import {
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
-  FormLabel,
-  Avatar,
-  Stack,
-} from '@mui/material';
+import { Checkbox, FormControlLabel, FormLabel, Stack } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import CircularProgress from '@mui/material/CircularProgress';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
 import { ChangeEvent, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { FaCloudUploadAlt } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import * as yup from 'yup';
+import { LoadingModal } from '../../components/LoadingModal';
 import { colors } from '../../constants';
 import {
   useAddNewAnswerMutation,
   useAddNewQuestionMutation,
 } from '../../store/apis/ManagementAPI/managementApi';
-import { formData } from './type';
 import { useUploadThumbnailMutation } from '../../store/apis/QuestionAPI/questionApi';
-import { FaCloudUploadAlt } from 'react-icons/fa';
 import {
   StyledAddButton,
   StyledAvatar,
@@ -33,7 +25,8 @@ import {
   StyledBoxUpper,
   StyledFormGroup,
 } from './styles/AddQuestionModalStyles';
-import { LoadingModal } from '../../components/LoadingModal';
+import { formData } from './type';
+import { ImagePreview } from '../../components/ImagePreview';
 
 const schema = yup
   .object({
@@ -106,22 +99,7 @@ const AddQuestionModal = ({
 
       await Promise.all(promises);
       toast('Add new question successuflly!');
-      reset({
-        title: '',
-        thumbnailLink: '',
-        answer1: '',
-        answer2: '',
-        answer3: '',
-        answer4: '',
-      });
-      setCorrectAnswersChosen({
-        answer1: true,
-        answer2: false,
-        answer3: false,
-        answer4: false,
-      });
-      setThumbnailUrl('');
-      setIsModalAddQuestionOpen(false);
+      handleCloseModalAddQuestion();
     } catch (error) {
       toast.error('Failed to add new question');
       console.log(error);
@@ -160,11 +138,35 @@ const AddQuestionModal = ({
     }
   };
 
+  const handleCloseModalAddQuestion = () => {
+    reset({
+      title: '',
+      thumbnailLink: '',
+      answer1: '',
+      answer2: '',
+      answer3: '',
+      answer4: '',
+    });
+    setCorrectAnswersChosen({
+      answer1: true,
+      answer2: false,
+      answer3: false,
+      answer4: false,
+    });
+    setThumbnailUrl('');
+    setIsModalAddQuestionOpen(false);
+  };
+
+  const [openImagePreview, setOpenImagePreview] = useState({
+    open: false,
+    imageUrl: '',
+  });
+
   return (
     <>
       <Modal
         open={isModalAddQuestionOpen}
-        onClose={() => setIsModalAddQuestionOpen(false)}
+        onClose={handleCloseModalAddQuestion}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
@@ -180,7 +182,18 @@ const AddQuestionModal = ({
             />
             <Stack flexDirection={'row'} alignItems={'center'}>
               <Box display="flex" justifyContent="center">
-                <StyledAvatar alt="thumbnail" src={thumbnailUrl} />
+                <Button
+                  onClick={() =>
+                    setOpenImagePreview({
+                      open: true,
+                      imageUrl:
+                        thumbnailUrl ||
+                        'https://cdn-icons-png.flaticon.com/512/1053/1053244.png?w=360',
+                    })
+                  }
+                >
+                  <StyledAvatar alt="thumbnail" src={thumbnailUrl} />
+                </Button>
               </Box>
               <Button component="label">
                 <FaCloudUploadAlt size={56} color={colors.primary} />
@@ -291,6 +304,10 @@ const AddQuestionModal = ({
       </Modal>
       <LoadingModal
         isOpen={isAddNewQuestionLoading || isAddNewAnswersLoading}
+      />
+      <ImagePreview
+        openImagePreview={openImagePreview}
+        setOpenImagePreview={setOpenImagePreview}
       />
     </>
   );

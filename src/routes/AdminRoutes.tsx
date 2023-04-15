@@ -9,6 +9,7 @@ import { ErrorPage } from '../pages/ErrorPage';
 import { ManagementPage } from '../pages/ManagamentPage';
 import { PlayPage } from '../pages/PlayPage';
 import { ReviewPage } from '../pages/ReviewPage';
+import { ProfilePage } from '../pages/ProfilePage';
 
 const router = createBrowserRouter([
   {
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
       {
         path: '/management',
         element: <ManagementPage />,
+      },
+      {
+        path: '/profile',
+        element: <ProfilePage />,
       },
     ],
   },

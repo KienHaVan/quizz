@@ -17,7 +17,14 @@ const AdminPage = () => {
         justifyContent="center"
         alignItems="center"
       >
-        <StyledButton variant="contained" onClick={() => navigate('/play')}>
+        <StyledButton
+          variant="contained"
+          onClick={() => {
+            localStorage.removeItem('listQuestionSubmitted');
+            localStorage.removeItem('userPlayingQuestions');
+            navigate('/play');
+          }}
+        >
           Play
         </StyledButton>
         <StyledButton

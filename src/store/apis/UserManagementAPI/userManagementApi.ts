@@ -1,4 +1,5 @@
 import apiSlice from '../apiSlice';
+import { GetOwnProfileType } from './type';
 
 export const userManagementSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -22,6 +23,11 @@ export const userManagementSlice = apiSlice.injectEndpoints({
     getUser: builder.query({
       query: ({ userId }) => `user/${userId}`,
       providesTags: (result, error, arg) => [{ type: 'User', id: arg.userId }],
+    }),
+    getOwnProfile: builder.query({
+      query: () => 'user/my-profile',
+      providesTags: () => [{ type: 'User', id: 'Profile' }],
+      transformResponse: (response: GetOwnProfileType) => response.data,
     }),
     createUser: builder.mutation({
       query: (body) => ({
@@ -48,6 +54,14 @@ export const userManagementSlice = apiSlice.injectEndpoints({
         { type: 'User', id: arg.userId },
       ],
     }),
+    uploadAvatar: builder.mutation({
+      query: (data) => ({
+        url: 'user/upload-avatar',
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: [{ type: 'User', id: 'Profile' }],
+    }),
   }),
 });
 
@@ -57,4 +71,6 @@ export const {
   useCreateUserMutation,
   useUpdateUserMutation,
   useDeleteUserMutation,
+  useUploadAvatarMutation,
+  useGetOwnProfileQuery,
 } = userManagementSlice;

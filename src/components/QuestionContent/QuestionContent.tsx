@@ -7,7 +7,7 @@ import Modal from '@mui/material/Modal';
 import Typography from '@mui/material/Typography';
 import { useTheme } from '@mui/material/styles';
 import { nanoid } from 'nanoid';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
@@ -34,27 +34,53 @@ import {
   AnswerType,
   ListQuestionCheckedType,
   ListQuestionSubmittedType,
+  UserPlayingType,
 } from './type';
 import { LoadingModal } from '../LoadingModal';
 
-const QuestionContent = ({ number }: { number: number }) => {
+const QuestionContent = ({
+  number,
+  userPlaying,
+}: {
+  number: number;
+  // userPlaying: {
+  //   userPlayingData: ListQuestionSubmittedType[];
+  //   userPlayingQuestions: UserPlayingType;
+  // };
+  userPlaying: any;
+}) => {
   const { data, error, isLoading } = useGetQuestionsQuery(number);
-  const listQuestions = data ? data.data : [];
-  const [listAnswers, setListAnswers] = useState<number[]>([]);
+
+  const listQuestions =
+    Object.keys(userPlaying.userPlayingQuestions).length > 0
+      ? userPlaying.userPlayingQuestions.data
+      : data
+      ? data.data
+      : [];
+
+  console.log(listQuestions);
+
+  const [listAnswers, setListAnswers] = useState<number[]>(
+    userPlaying?.userPlayingData[0]?.answersSubmittedId || []
+  );
   const [listQuestionSubmitted, setListQuestionSubmitted] = useState<
     ListQuestionSubmittedType[]
-  >([]);
+  >(userPlaying.userPlayingData);
 
   const [openModalResults, setOpenModalResults] = useState(false);
   const handleOpenModal = () => setOpenModalResults(true);
   const handleClose = () => setOpenModalResults(false);
 
   const theme = useTheme();
-  const [activeStep, setActiveStep] = useState(0);
+  const [activeStep, setActiveStep] = useState(
+    userPlaying?.userPlayingData?.length || 0
+  );
   const maxSteps = listQuestions.length;
   const navigate = useNavigate();
 
   const playAgain = () => {
+    localStorage.removeItem('listQuestionSubmitted');
+    localStorage.removeItem('userPlayingQuestions');
     navigate(0);
   };
   const [
@@ -84,24 +110,36 @@ const QuestionContent = ({ number }: { number: number }) => {
     return theScore;
   };
 
-  // useEffect(() => {
-  //   setListAnswers([]);
-  // }, [activeStep]);
-
   const handleNext = (id: number) => {
     if (listAnswers.length === 0) {
       toast.error('Choose at least 1 answer!');
       return;
     }
     if (activeStep < maxSteps - 1) {
-      setListQuestionSubmitted([
-        ...listQuestionSubmitted,
-        {
-          id,
-          answersSubmittedId: listAnswers,
-        },
-      ]);
-      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      const index = listQuestionSubmitted.findIndex((item) => item.id === id);
+      console.log(index);
+
+      if (index > -1) {
+        setListQuestionSubmitted([
+          ...listQuestionSubmitted.slice(0, index),
+          {
+            id,
+            answersSubmittedId: listAnswers,
+          },
+          ...listQuestionSubmitted.slice(index + 1),
+        ]);
+      } else {
+        setListQuestionSubmitted([
+          ...listQuestionSubmitted,
+          {
+            id,
+            answersSubmittedId: listAnswers,
+          },
+        ]);
+      }
+
+      setListAnswers([]);
+      setActiveStep((prevActiveStep: number) => prevActiveStep + 1);
     } else {
       Swal.fire({
         title: 'Do you want to submit?',
@@ -126,10 +164,10 @@ const QuestionContent = ({ number }: { number: number }) => {
               answersSubmittedId: listAnswers,
             },
           ]);
+          setListAnswers([]);
         }
       });
     }
-    setListAnswers([]);
     if (activeStep < maxSteps - 1) {
       listQuestionSubmitted.forEach((item) => {
         if (item.id === listQuestions[activeStep + 1].id) {
@@ -145,8 +183,23 @@ const QuestionContent = ({ number }: { number: number }) => {
         setListAnswers(item.answersSubmittedId);
       }
     });
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    setActiveStep((prevActiveStep: number) => prevActiveStep - 1);
   };
+
+  useEffect(() => {
+    localStorage.setItem(
+      'userPlayingData',
+      JSON.stringify(listQuestionSubmitted)
+    );
+    localStorage.setItem(
+      'userPlayingQuestions',
+      JSON.stringify(
+        Object.keys(userPlaying.userPlayingQuestions).length > 0
+          ? userPlaying.userPlayingQuestions
+          : data
+      )
+    );
+  }, [data, listQuestionSubmitted, userPlaying.userPlayingQuestions]);
 
   if (isLoading) {
     return <LoadingModal isOpen={isLoading} />;
@@ -168,7 +221,7 @@ const QuestionContent = ({ number }: { number: number }) => {
             >
               Question:
             </Typography>
-            <StyledTitle variant="h4">
+            <StyledTitle variant="h4" className="textClampQuestion">
               {listQuestions[activeStep].title}
             </StyledTitle>
           </StyledBoxTitle>
@@ -198,7 +251,12 @@ const QuestionContent = ({ number }: { number: number }) => {
                 setListAnswers(updatedListAnswers);
               }}
             >
-              {item.content}
+              <Typography
+                className="textClampAnswer"
+                sx={{ textTransform: 'none' }}
+              >
+                {item.content}
+              </Typography>
             </StyledAnswerButton>
           ))}
         </StyledBoxAnswers>

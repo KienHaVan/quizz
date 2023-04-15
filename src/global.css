@@ -1,0 +1,14 @@
+.textClampQuestion {
+  display: -webkit-box !important;
+  -webkit-line-clamp: 8 !important;
+  -webkit-box-orient: vertical !important ;
+  overflow: hidden !important;
+}
+
+.textClampAnswer {
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important ;
+  overflow: hidden !important;
+  overflow-wrap: break-word !important;
+}

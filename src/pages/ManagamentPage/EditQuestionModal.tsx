@@ -1,12 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import {
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
-  FormLabel,
-  Avatar,
-  Stack,
-} from '@mui/material';
+import { Checkbox, FormControlLabel, FormLabel, Stack } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -14,6 +7,7 @@ import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { FaCloudUploadAlt } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import * as yup from 'yup';
 import { colors } from '../../constants';
@@ -22,7 +16,6 @@ import {
   useUpdateAnswerMutation,
   useUpdateQuestionMutation,
 } from '../../store/apis/ManagementAPI/managementApi';
-import { formData } from './type';
 import { useUploadThumbnailMutation } from '../../store/apis/QuestionAPI/questionApi';
 import {
   StyledAddButton,
@@ -33,7 +26,9 @@ import {
   StyledBoxUpper,
   StyledFormGroup,
 } from './styles/AddQuestionModalStyles';
-import { FaCloudUploadAlt } from 'react-icons/fa';
+import { formData } from './type';
+import { LoadingModal } from '../../components/LoadingModal';
+import { ImagePreview } from '../../components/ImagePreview';
 
 const schema = yup
   .object({
@@ -56,7 +51,7 @@ const EditQuestionModal = ({
   setIsModalEditQuestionOpen,
   editQuestionId,
 }: EditQuestionModalPropType) => {
-  const { data: questionData } = useGetQuestionQuery({
+  const { data: questionData, isFetching } = useGetQuestionQuery({
     questionId: editQuestionId,
   });
 
@@ -117,7 +112,7 @@ const EditQuestionModal = ({
       setThumbnailUrl(questionData?.data?.thumbnail_link);
       reset(newDefaultValues);
     }
-  }, [questionData, reset]);
+  }, [questionData, reset, isModalEditQuestionOpen]);
 
   const [updateQuestion, { isLoading: updateQuestionLoading }] =
     useUpdateQuestionMutation();
@@ -214,164 +209,172 @@ const EditQuestionModal = ({
       }
     }
   };
+  const [openImagePreview, setOpenImagePreview] = useState({
+    open: false,
+    imageUrl: '',
+  });
+
   return (
-    <Modal
-      open={isModalEditQuestionOpen}
-      onClose={() => setIsModalEditQuestionOpen(false)}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-    >
-      <StyledBoxContainer>
-        <StyledBoxUpper>
-          <TextField
-            label="Title"
-            type="string"
-            fullWidth
-            {...register('title')}
-            error={!!errors.title}
-            helperText={errors.title?.message?.toString()}
-            autoFocus
-          />
-          <Stack flexDirection={'row'} alignItems={'center'} gap={4}>
-            <Box display="flex" justifyContent="center">
-              <StyledAvatar
-                alt="thumbnail"
-                sx={{
-                  width: '50px',
-                  height: '50px',
-                }}
-                src={thumbnailUrl}
+    <>
+      <Modal
+        open={isModalEditQuestionOpen}
+        onClose={() => setIsModalEditQuestionOpen(false)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <StyledBoxContainer>
+          <StyledBoxUpper>
+            <TextField
+              label="Title"
+              type="string"
+              fullWidth
+              {...register('title')}
+              error={!!errors.title}
+              helperText={errors.title?.message?.toString()}
+              autoFocus
+            />
+            <Stack flexDirection={'row'} alignItems={'center'}>
+              <Box display="flex" justifyContent="center">
+                <Button
+                  onClick={() =>
+                    setOpenImagePreview({
+                      open: true,
+                      imageUrl:
+                        thumbnailUrl ||
+                        'https://cdn-icons-png.flaticon.com/512/1053/1053244.png?w=360',
+                    })
+                  }
+                >
+                  <StyledAvatar
+                    alt="thumbnail"
+                    sx={{
+                      width: '70px',
+                      height: '70px',
+                    }}
+                    src={thumbnailUrl}
+                  />
+                </Button>
+              </Box>
+              <Button component="label">
+                <FaCloudUploadAlt size={56} color={colors.primary} />
+                <input
+                  hidden
+                  accept="image/*"
+                  multiple
+                  type="file"
+                  onChange={handleUploadThumbnail}
+                  ref={fileInputRef}
+                />
+              </Button>
+            </Stack>
+          </StyledBoxUpper>
+          <StyledBoxMiddle>
+            <TextField
+              label="Answer 1"
+              type="string"
+              fullWidth
+              {...register('answer1')}
+              error={!!errors.answer1}
+              helperText={errors.answer1?.message?.toString()}
+              sx={{ mb: 2 }}
+              autoFocus
+            />
+            <TextField
+              label="Answer 2"
+              type="string"
+              fullWidth
+              {...register('answer2')}
+              error={!!errors.answer2}
+              helperText={errors.answer2?.message?.toString()}
+              sx={{ mb: 2 }}
+              autoFocus
+            />
+          </StyledBoxMiddle>
+          <StyledBoxMiddle>
+            <TextField
+              label="Answer 3"
+              type="string"
+              fullWidth
+              {...register('answer3')}
+              error={!!errors.answer3}
+              helperText={errors.answer3?.message?.toString()}
+              sx={{ mb: 2 }}
+              autoFocus
+            />
+            <TextField
+              label="Answer 4"
+              type="string"
+              fullWidth
+              {...register('answer4')}
+              error={!!errors.answer4}
+              helperText={errors.answer4?.message?.toString()}
+              sx={{ mb: 2 }}
+              autoFocus
+            />
+          </StyledBoxMiddle>
+          <StyledBoxDown>
+            <FormLabel>Correct Answer</FormLabel>
+            <StyledFormGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    name="answer1"
+                    checked={correctAnswersChosen.answer1}
+                    onChange={handleCorrectAnswersChosen}
+                  />
+                }
+                label="answer 1"
               />
-            </Box>
-            <Button variant="contained" component="label">
-              <FaCloudUploadAlt size={56} color={colors.white} />
-              <input
-                hidden
-                accept="image/*"
-                multiple
-                type="file"
-                onChange={handleUploadThumbnail}
-                ref={fileInputRef}
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    name="answer2"
+                    checked={correctAnswersChosen.answer2}
+                    onChange={handleCorrectAnswersChosen}
+                  />
+                }
+                label="answer 2"
               />
-            </Button>
-            {/* <Button
-              variant="contained"
-              component="label"
-              sx={{ width: '300px', height: '56px', color: colors.white }}
-            >
-              Upload image
-              <input
-                hidden
-                accept="image/*"
-                multiple
-                type="file"
-                onChange={handleUploadThumbnail}
-                ref={fileInputRef}
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    name="answer3"
+                    checked={correctAnswersChosen.answer3}
+                    onChange={handleCorrectAnswersChosen}
+                  />
+                }
+                label="answer 3"
               />
-            </Button> */}
-          </Stack>
-        </StyledBoxUpper>
-        <StyledBoxMiddle>
-          <TextField
-            label="Answer 1"
-            type="string"
-            fullWidth
-            {...register('answer1')}
-            error={!!errors.answer1}
-            helperText={errors.answer1?.message?.toString()}
-            sx={{ mb: 2 }}
-            autoFocus
-          />
-          <TextField
-            label="Answer 2"
-            type="string"
-            fullWidth
-            {...register('answer2')}
-            error={!!errors.answer2}
-            helperText={errors.answer2?.message?.toString()}
-            sx={{ mb: 2 }}
-            autoFocus
-          />
-        </StyledBoxMiddle>
-        <StyledBoxMiddle>
-          <TextField
-            label="Answer 3"
-            type="string"
-            fullWidth
-            {...register('answer3')}
-            error={!!errors.answer3}
-            helperText={errors.answer3?.message?.toString()}
-            sx={{ mb: 2 }}
-            autoFocus
-          />
-          <TextField
-            label="Answer 4"
-            type="string"
-            fullWidth
-            {...register('answer4')}
-            error={!!errors.answer4}
-            helperText={errors.answer4?.message?.toString()}
-            sx={{ mb: 2 }}
-            autoFocus
-          />
-        </StyledBoxMiddle>
-        <StyledBoxDown>
-          <FormLabel>Correct Answer</FormLabel>
-          <StyledFormGroup>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name="answer1"
-                  checked={correctAnswersChosen.answer1}
-                  onChange={handleCorrectAnswersChosen}
-                />
-              }
-              label="answer 1"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name="answer2"
-                  checked={correctAnswersChosen.answer2}
-                  onChange={handleCorrectAnswersChosen}
-                />
-              }
-              label="answer 2"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name="answer3"
-                  checked={correctAnswersChosen.answer3}
-                  onChange={handleCorrectAnswersChosen}
-                />
-              }
-              label="answer 3"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name="answer4"
-                  checked={correctAnswersChosen.answer4}
-                  onChange={handleCorrectAnswersChosen}
-                />
-              }
-              label="answer 4"
-            />
-          </StyledFormGroup>
-        </StyledBoxDown>
-        <StyledAddButton
-          variant="contained"
-          onClick={handleSubmit(onEditQuestion)}
-        >
-          {updateQuestionLoading || updateAnswerLoading ? (
-            <CircularProgress color="info" size={30} />
-          ) : (
-            'Edit the question'
-          )}
-        </StyledAddButton>
-      </StyledBoxContainer>
-    </Modal>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    name="answer4"
+                    checked={correctAnswersChosen.answer4}
+                    onChange={handleCorrectAnswersChosen}
+                  />
+                }
+                label="answer 4"
+              />
+            </StyledFormGroup>
+          </StyledBoxDown>
+          <StyledAddButton
+            variant="contained"
+            onClick={handleSubmit(onEditQuestion)}
+          >
+            {updateQuestionLoading || updateAnswerLoading ? (
+              <CircularProgress color="info" size={30} />
+            ) : (
+              'Edit the question'
+            )}
+          </StyledAddButton>
+        </StyledBoxContainer>
+      </Modal>
+      <LoadingModal isOpen={isFetching} />
+      <ImagePreview
+        openImagePreview={openImagePreview}
+        setOpenImagePreview={setOpenImagePreview}
+      />
+    </>
   );
 };
 

@@ -15,6 +15,7 @@ import { colors } from '../../constants';
 import { useNavigate } from 'react-router-dom';
 import { ListQuestionChecked } from './type';
 import {
+  StledBoxWrapper,
   StyledAnswerButton,
   StyledBox,
   StyledBoxAnswers,
@@ -44,7 +45,7 @@ const ReviewPage = () => {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex' }}>
+    <StledBoxWrapper>
       <Header />
       <StyledBoxContainer>
         <StyledBoxUpper>
@@ -62,7 +63,7 @@ const ReviewPage = () => {
             >
               Question:
             </Typography>
-            <StyledTitle variant="h4">
+            <StyledTitle variant="h4" className="textClampQuestion">
               {listQuestionChecked[activeStep].title}
             </StyledTitle>
           </StyledBoxTitle>
@@ -85,7 +86,12 @@ const ReviewPage = () => {
                 color={item.is_correct ? 'success' : 'info'}
                 key={nanoid()}
               >
-                {item.content}
+                <Typography
+                  className="textClampAnswer"
+                  sx={{ textTransform: 'none' }}
+                >
+                  {item.content}
+                </Typography>
               </StyledAnswerButton>
             ))}
           </StyledBoxAnswers>
@@ -106,7 +112,12 @@ const ReviewPage = () => {
                 }
                 key={nanoid()}
               >
-                {item.content}
+                <Typography
+                  className="textClampAnswer"
+                  sx={{ textTransform: 'none' }}
+                >
+                  {item.content}
+                </Typography>
               </StyledAnswerButton>
             ))}
           </StyledBoxAnswers>
@@ -128,7 +139,14 @@ const ReviewPage = () => {
                 )}
               </Button>
             ) : (
-              <Button size="small" onClick={() => navigate('/')}>
+              <Button
+                size="small"
+                onClick={() => {
+                  localStorage.removeItem('listQuestionSubmitted');
+                  localStorage.removeItem('userPlayingQuestions');
+                  navigate('/');
+                }}
+              >
                 Play Again
                 {theme.direction === 'rtl' ? (
                   <KeyboardArrowLeft />
@@ -154,7 +172,7 @@ const ReviewPage = () => {
           }
         />
       </StyledBoxContainer>
-    </Box>
+    </StledBoxWrapper>
   );
 };
 

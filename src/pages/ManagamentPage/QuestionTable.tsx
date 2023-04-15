@@ -1,6 +1,6 @@
 import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
-import { IconButton } from '@mui/material';
+import { Button, IconButton } from '@mui/material';
 import Box from '@mui/material/Box';
 import { DataGrid, GridColDef, GridRowsProp } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
@@ -14,6 +14,7 @@ import {
 } from '../../store/apis/ManagementAPI/managementApi';
 import EditQuestionModal from './EditQuestionModal';
 import { AllQuestionType, QuestionRowType } from './type';
+import { ImagePreview } from '../../components/ImagePreview';
 
 const QuestionTable = ({
   questionSearch,
@@ -114,17 +115,26 @@ const QuestionTable = ({
       renderCell: (params) => {
         if (params.row.thumbnail) {
           return (
-            <img
-              src={params.row.thumbnail.toString()}
-              alt="thumbnail"
-              style={{
-                width: 60,
-                height: 60,
-                padding: '12px',
-                borderRadius: '50%',
-                objectFit: 'cover',
-              }}
-            />
+            <Button
+              onClick={() =>
+                setOpenImagePreview({
+                  open: true,
+                  imageUrl: params.row.thumbnail.toString(),
+                })
+              }
+            >
+              <img
+                src={params.row.thumbnail.toString()}
+                alt="thumbnail"
+                style={{
+                  width: 60,
+                  height: 60,
+                  padding: '12px',
+                  borderRadius: '50%',
+                  objectFit: 'cover',
+                }}
+              />
+            </Button>
           );
         }
         return <div>No thumbmail</div>;
@@ -169,6 +179,11 @@ const QuestionTable = ({
     },
   ];
 
+  const [openImagePreview, setOpenImagePreview] = useState({
+    open: false,
+    imageUrl: '',
+  });
+
   if (!!error) {
     return <div>Error...</div>;
   }
@@ -192,6 +207,10 @@ const QuestionTable = ({
         isModalEditQuestionOpen={isModalEditQuestionOpen}
         setIsModalEditQuestionOpen={setIsModalEditQuestionOpen}
         editQuestionId={editQuestionId}
+      />
+      <ImagePreview
+        openImagePreview={openImagePreview}
+        setOpenImagePreview={setOpenImagePreview}
       />
     </>
   );

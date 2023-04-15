@@ -26,6 +26,7 @@ import {
   StyledFormGroup,
   StyledSubmitButton,
 } from './styles/AddUserModalStyles';
+import { LoadingModal } from '../../components/LoadingModal';
 
 const schema = yup
   .object({
@@ -45,7 +46,11 @@ const EditUserModal = ({
   setIsModalEditUserOpen,
   userId,
 }: EditUserModalPropType) => {
-  const { data: userData } = useGetUserQuery({
+  const {
+    data: userData,
+    // isLoading,
+    isFetching,
+  } = useGetUserQuery({
     userId,
   });
 
@@ -93,7 +98,7 @@ const EditUserModal = ({
       setRoleChosen(newRoleChosen);
       reset(newDefaultValues);
     }
-  }, [reset, userData]);
+  }, [reset, userData, isModalEditUserOpen]);
 
   const onEditUser = async (data: userEditFormData) => {
     const roles = [];
@@ -125,70 +130,73 @@ const EditUserModal = ({
     }
   };
   return (
-    <Modal
-      open={isModalEditUserOpen}
-      onClose={() => setIsModalEditUserOpen(false)}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-    >
-      <StyledBoxContainer>
-        <TextField
-          label="Name"
-          type="string"
-          fullWidth
-          {...register('name')}
-          error={!!errors.name}
-          helperText={errors.name?.message?.toString()}
-          sx={{ mb: 2 }}
-          autoFocus
-        />
-        <TextField
-          label="Email"
-          type="email"
-          fullWidth
-          {...register('email')}
-          error={!!errors.email}
-          helperText={errors.email?.message?.toString()}
-          sx={{ mb: 2 }}
-          autoFocus
-        />
-        <StyledBoxRole>
-          <FormLabel>Roles</FormLabel>
-          <StyledFormGroup>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name="user"
-                  checked={roleChosen.user}
-                  onChange={handleRoleChosen}
-                />
-              }
-              label="User"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name="admin"
-                  checked={roleChosen.admin}
-                  onChange={handleRoleChosen}
-                />
-              }
-              label="Admin"
-            />
-          </StyledFormGroup>
-        </StyledBoxRole>
-        <StyledSubmitButton
-          variant="contained"
-          onClick={handleSubmit(onEditUser)}
-        >
-          {updateUserLoading ? (
-            <CircularProgress color="info" size={30} />
-          ) : (
-            'Edit the user'
-          )}
-        </StyledSubmitButton>
-      </StyledBoxContainer>
-    </Modal>
+    <>
+      <Modal
+        open={isModalEditUserOpen}
+        onClose={() => setIsModalEditUserOpen(false)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <StyledBoxContainer>
+          <TextField
+            label="Name"
+            type="string"
+            fullWidth
+            {...register('name')}
+            error={!!errors.name}
+            helperText={errors.name?.message?.toString()}
+            sx={{ mb: 2 }}
+            autoFocus
+          />
+          <TextField
+            label="Email"
+            type="email"
+            fullWidth
+            {...register('email')}
+            error={!!errors.email}
+            helperText={errors.email?.message?.toString()}
+            sx={{ mb: 2 }}
+            autoFocus
+          />
+          <StyledBoxRole>
+            <FormLabel>Roles</FormLabel>
+            <StyledFormGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    name="user"
+                    checked={roleChosen.user}
+                    onChange={handleRoleChosen}
+                  />
+                }
+                label="User"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    name="admin"
+                    checked={roleChosen.admin}
+                    onChange={handleRoleChosen}
+                  />
+                }
+                label="Admin"
+              />
+            </StyledFormGroup>
+          </StyledBoxRole>
+          <StyledSubmitButton
+            variant="contained"
+            onClick={handleSubmit(onEditUser)}
+          >
+            {updateUserLoading ? (
+              <CircularProgress color="info" size={30} />
+            ) : (
+              'Edit the user'
+            )}
+          </StyledSubmitButton>
+        </StyledBoxContainer>
+      </Modal>
+      <LoadingModal isOpen={isFetching} />
+    </>
   );
 };
 
