@@ -23,7 +23,7 @@ const schema = yup
       .number()
       .min(1, 'More than 1 questions')
       .max(10, 'Less than 10 questions')
-      .required(),
+      .required('Enter the number of questions'),
   })
   .required();
 
@@ -88,7 +88,7 @@ const PlayPage = () => {
             </CustomText>
             <StyledTextField
               label="The number of questions"
-              type="number"
+              // type="number"
               fullWidth
               {...register('number')}
               error={!!errors.number}

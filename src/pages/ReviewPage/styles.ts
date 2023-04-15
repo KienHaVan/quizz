@@ -116,6 +116,7 @@ export const StyledAnswerButton = styled(Button)(({ theme }) => ({
   padding: '32px 16px',
   minWidth: '200px',
   maxWidth: '240px',
+  maxHeight: '100px',
   [theme.breakpoints.down('md')]: {
     // width: '100%',
     maxWidth: '360px',
